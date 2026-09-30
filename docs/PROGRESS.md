@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 3 — Tasks  
+**Current iteration:** 4 — Kanban (next)  
 **Status:** in progress  
-**Current focus:** Step 6 (Tasks API) done; next — Step 7 Tasks UI on goal detail.
+**Current focus:** Step 7 done; Kanban + reorder API next.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -33,7 +33,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 - [x] Create / edit / delete task (REST API)
 - [x] Task status (`PATCH`)
 - [x] Task → goal relationship (nested routes + ownership)
-- [ ] Tasks UI on goal detail
+- [x] Tasks UI on goal detail (status select, modern theme)
 
 ### Iteration 4 — Kanban
 
@@ -68,14 +68,14 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 6 — Tasks API:** nested `POST/GET .../goals/:goalId/tasks`, `GET/PATCH/DELETE /tasks/:id`, auto `position`, status + `completedAt` on `DONE`, integration tests.
+- **Step 7 — Tasks UI + modern theme:** `features/tasks`, goal detail task list, Inter font, indigo theme, `.cursor/skills/modern-ui/`.
 
 ---
 
 ## Next up
 
-1. **Step 7:** Tasks list + CRUD UI on `GoalDetailPage`
-2. **Iteration 4:** Kanban + reorder endpoint
+1. **Iteration 4:** Kanban board on goal detail + `POST /tasks/reorder`
+2. dnd-kit + optimistic updates
 
 ---
 
@@ -92,6 +92,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | Pre-auth: single dev user `dev@goaltracker.local` (upsert) owns all goals. |
 | 2026-09-30 | Frontend API base via `VITE_API_URL` (see `.env.example`). |
 | 2026-09-30 | New tasks get `position` in steps of 100 per goal. |
+| 2026-09-30 | Modern UI skill + shared `app/theme.ts` (Inter, indigo, soft surfaces). |
 
 ---
 

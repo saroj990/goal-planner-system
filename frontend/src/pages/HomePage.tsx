@@ -1,18 +1,21 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Paper, Stack, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
 export function HomePage() {
   return (
-    <Stack spacing={2}>
-      <Typography component="h1" variant="h4">
-        Goal Tracker
-      </Typography>
-      <Typography color="text.secondary">
-        Personal goals and tasks. Manage daily, weekly, and monthly goals.
-      </Typography>
-      <Button component={RouterLink} to="/goals" variant="contained">
-        View goals
-      </Button>
-    </Stack>
+    <Paper sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, textAlign: 'center' }}>
+      <Stack spacing={2} alignItems="center">
+        <Typography component="h1" variant="h4">
+          Your goals, one calm place
+        </Typography>
+        <Typography color="text.secondary" sx={{ maxWidth: 420 }}>
+          Plan daily, weekly, and monthly outcomes. Add tasks under each goal and track progress
+          without the JIRA noise.
+        </Typography>
+        <Button component={RouterLink} to="/goals" variant="contained" size="large">
+          Open goals
+        </Button>
+      </Stack>
+    </Paper>
   );
 }

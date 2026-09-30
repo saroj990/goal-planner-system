@@ -1,12 +1,14 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import {
   Alert,
   Box,
   Button,
   Chip,
   CircularProgress,
+  IconButton,
+  Paper,
   Stack,
   Typography,
 } from '@mui/material';
@@ -16,6 +18,7 @@ import { GoalFormDialog } from '../features/goals/components/GoalFormDialog';
 import { useGoalMutations } from '../features/goals/hooks/useGoalMutations';
 import { useGoal } from '../features/goals/hooks/useGoals';
 import type { CreateGoalInput } from '../features/goals/types';
+import { GoalTasksSection } from '../features/tasks/components/GoalTasksSection';
 
 export function GoalDetailPage() {
   const { id = '' } = useParams();
@@ -26,7 +29,7 @@ export function GoalDetailPage() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
         <CircularProgress />
       </Box>
     );
@@ -34,7 +37,7 @@ export function GoalDetailPage() {
 
   if (isError || !goal) {
     return (
-      <Alert severity="error">
+      <Alert severity="error" sx={{ borderRadius: 2 }}>
         {error instanceof Error ? error.message : 'Goal not found'}
       </Alert>
     );
@@ -48,41 +51,49 @@ export function GoalDetailPage() {
 
   return (
     <Box>
-      <Button component={RouterLink} to="/goals" startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
-        Back to goals
+      <Button
+        component={RouterLink}
+        to="/goals"
+        startIcon={<ArrowBackIcon />}
+        color="inherit"
+        sx={{ mb: 2, color: 'text.secondary' }}
+      >
+        Goals
       </Button>
 
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={2}>
-        <Box>
-          <Typography component="h1" variant="h4" gutterBottom>
-            {goal.title}
-          </Typography>
-          <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-            <Chip label={goal.type} size="small" />
-            <Chip label={goal.status} size="small" color="primary" variant="outlined" />
-          </Stack>
-          {goal.description && (
-            <Typography color="text.secondary" paragraph>
-              {goal.description}
+      <Paper sx={{ p: 3, borderRadius: 4, mb: 1 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={2}>
+          <Box>
+            <Typography component="h1" variant="h4" gutterBottom>
+              {goal.title}
             </Typography>
-          )}
-          {goal.dueDate && (
-            <Typography variant="body2">Due: {goal.dueDate.slice(0, 10)}</Typography>
-          )}
-        </Box>
-        <Stack direction="row" spacing={1}>
-          <Button startIcon={<EditIcon />} onClick={() => setEditOpen(true)}>
-            Edit
-          </Button>
-          <Button color="error" startIcon={<DeleteIcon />} onClick={handleDelete}>
-            Delete
-          </Button>
+            <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap" useFlexGap>
+              <Chip label={goal.type} size="small" sx={{ bgcolor: '#eef2ff', color: '#4338ca' }} />
+              <Chip label={goal.status} size="small" variant="outlined" />
+            </Stack>
+            {goal.description && (
+              <Typography color="text.secondary" sx={{ maxWidth: 560 }}>
+                {goal.description}
+              </Typography>
+            )}
+            {goal.dueDate && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
+                Due {goal.dueDate.slice(0, 10)}
+              </Typography>
+            )}
+          </Box>
+          <Stack direction="row" spacing={0.5}>
+            <IconButton aria-label="Edit goal" onClick={() => setEditOpen(true)}>
+              <EditOutlinedIcon />
+            </IconButton>
+            <IconButton aria-label="Delete goal" color="error" onClick={handleDelete}>
+              <DeleteOutlineIcon />
+            </IconButton>
+          </Stack>
         </Stack>
-      </Stack>
+      </Paper>
 
-      <Typography color="text.secondary" sx={{ mt: 4 }}>
-        Tasks and Kanban board will appear here in a later step.
-      </Typography>
+      <GoalTasksSection goalId={goal.id} />
 
       <GoalFormDialog
         open={editOpen}

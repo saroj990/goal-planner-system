@@ -14,7 +14,7 @@ describe('HomePage', () => {
       </AppProviders>,
     );
 
-    expect(screen.getByRole('heading', { name: /goal tracker/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /view goals/i })).toHaveAttribute('href', '/goals');
+    expect(screen.getByRole('heading', { name: /your goals/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /open goals/i })).toHaveAttribute('href', '/goals');
   });
 });

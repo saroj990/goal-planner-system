@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Paper,
   Stack,
   Typography,
 } from '@mui/material';
@@ -24,16 +25,21 @@ export function GoalsPage() {
 
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography component="h1" variant="h4">
-          Goals
-        </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Box>
+          <Typography component="h1" variant="h4">Goals</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Focus on what matters this day, week, or month.
+          </Typography>
+        </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)}>
-          Add goal
+          New goal
         </Button>
       </Stack>
 
-      <GoalTypeTabs value={type} onChange={setType} />
+      <Paper sx={{ px: 2, py: 1, borderRadius: 3, mb: 3 }}>
+        <GoalTypeTabs value={type} onChange={setType} />
+      </Paper>
 
       {isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -42,15 +48,20 @@ export function GoalsPage() {
       )}
 
       {isError && (
-        <Alert severity="error" sx={{ mt: 2 }}>
+        <Alert severity="error" sx={{ borderRadius: 2 }}>
           {error instanceof Error ? error.message : 'Failed to load goals'}
         </Alert>
       )}
 
       {!isLoading && !isError && (
-        <Stack spacing={2} sx={{ mt: 3 }}>
+        <Stack spacing={2}>
           {goals?.length === 0 && (
-            <Typography color="text.secondary">No {type.toLowerCase()} goals yet.</Typography>
+            <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 3, borderStyle: 'dashed' }}>
+              <Typography fontWeight={600}>No {type.toLowerCase()} goals yet</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Create one to start tracking tasks.
+              </Typography>
+            </Paper>
           )}
           {goals?.map((goal) => (
             <GoalCard key={goal.id} goal={goal} />

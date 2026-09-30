@@ -24,3 +24,7 @@ Organize by **feature**: `src/features/goals`, `tasks`, `dashboard`, `progress` 
 ## UX scope
 
 Four primary areas: Dashboard, Goals (type tabs), Goal detail Kanban, Progress. Avoid JIRA-scale scope (sprints, epics, complex workflows).
+
+## Modern UI
+
+Follow `.cursor/skills/modern-ui/` and `frontend/src/app/theme.ts` for styling—contemporary, airy layouts; not default enterprise Material chrome.
