@@ -1,0 +1,48 @@
+---
+description: Test-driven development — red/green/refactor, Vitest, Playwright, what to test
+alwaysApply: true
+---
+
+# Testing — test-driven development
+
+Follow **TDD** for new behavior unless the user explicitly opts out for a one-off spike (then add tests before calling the work done).
+
+## Red → Green → Refactor
+
+1. **Red:** Write a failing test that describes the desired behavior (API contract, domain rule, hook, or user flow).
+2. **Green:** Implement the smallest change that makes the test pass.
+3. **Refactor:** Clean up duplication and names; keep tests green.
+
+Do not land feature code without tests that would have failed before the implementation.
+
+## Stack (per architecture plan)
+
+| Layer | Tool |
+|-------|------|
+| Unit / integration | **Vitest** (frontend and backend) |
+| End-to-end | **Playwright** |
+
+Run the relevant test suite after changes; fix failures before finishing the task.
+
+## Where tests live
+
+- **Frontend:** colocate `*.test.ts` / `*.test.tsx` next to the module under test, or under `src/features/<feature>/` alongside `hooks/` and `api/`.
+- **Backend:** `*.spec.ts` next to Nest services/controllers, or under module `__tests__/`; use Nest testing utilities and mock Prisma/repositories.
+- **E2E:** `e2e/` or `frontend/e2e/` — critical paths only (auth, create goal, task status, Kanban reorder).
+
+## What to test (priority)
+
+- Domain rules: goal vs task statuses, ownership, `position` / reorder semantics.
+- API: validation, status codes, happy path and main error cases for `/api/v1/goals`, `tasks`, `tasks/reorder`, `dashboard`, `progress`.
+- Frontend: pure helpers, TanStack Query hooks/mutations (mock HTTP), Kanban optimistic update behavior.
+- E2E: smoke flows across Dashboard → Goals → Goal Kanban.
+
+## What to avoid
+
+- Testing MUI or third-party internals; test your wiring and outcomes.
+- Snapshot-only tests with no assertion of behavior.
+- Brittle selectors in Playwright; prefer roles, labels, and `data-testid` only when needed.
+
+## When fixing bugs
+
+Reproduce with a failing test first, then fix — same TDD loop.

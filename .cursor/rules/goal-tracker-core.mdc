@@ -1,0 +1,29 @@
+---
+description: Goal Tracker product vision, domain rules, and architecture constraints
+alwaysApply: true
+---
+
+# Goal Tracker — core
+
+## Vision
+
+Lightweight **personal** goal management: daily/weekly/monthly goals, tasks under goals, Kanban with drag-and-drop, dashboard and progress. Start simple; evolve without rewriting the core.
+
+## Architectural principle
+
+Goals are the core domain. Tasks are execution units. Analytics observes what happened. AI operates on top later.
+
+## Constraints
+
+- **Modular monolith** (NestJS + PostgreSQL). No microservices in V1.
+- Do not model goals with task statuses (`TODO` / `IN_PROGRESS` / `DONE`).
+- Goal statuses: `ACTIVE`, `COMPLETED`, `ARCHIVED`.
+- Task statuses: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
+- Tasks belong to goals; preserve `position` for Kanban ordering.
+- API prefix: `/api/v1`. Reorder tasks via dedicated reorder endpoint, not ad-hoc patches only.
+
+## Implementation guidance
+
+- Follow `local/architecture/goal-tracker-architecture-plan.md` (gitignored) and the `goal-tracker` skill in `.cursor/skills/`.
+- Prefer minimal diffs; match existing folder conventions once the repo layout exists.
+- Do not add recurring goals, notifications, Redis, or AI features unless explicitly requested.

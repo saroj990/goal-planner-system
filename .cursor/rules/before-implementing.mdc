@@ -1,0 +1,39 @@
+---
+description: Pre-flight checklist — follow all project rules before writing or changing code
+alwaysApply: true
+---
+
+# Before implementing
+
+Do **not** start coding, scaffolding, or refactors until this checklist is satisfied.
+
+## 1. Rules and spec
+
+Apply **all** `.cursor/rules/` that apply to the task:
+
+| Rule | When |
+|------|------|
+| `goal-tracker-core.mdc` | Always — domain, V1 scope, API conventions |
+| `pnpm-packages.mdc` | Any install, script, or dependency change |
+| `secrets-env.mdc` | Any config or env-related work — never touch `.env` or secret files |
+| `testing-tdd.mdc` | Any behavior change — red → green → refactor |
+| `documentation-progress.mdc` | End of each meaningful step — update `docs/PROGRESS.md` |
+| `frontend.mdc` | `frontend/**/*.{ts,tsx}` |
+| `backend.mdc` | `backend/**/*.ts` |
+| `github-commits.mdc` | Only when the user asks to commit |
+
+For non-trivial work, read `local/architecture/goal-tracker-architecture-plan.md` and use the `goal-tracker` skill (`.cursor/skills/goal-tracker/`).
+
+## 2. User alignment
+
+If the user defined **step-by-step implementation with approval**, do not begin the next step until they explicitly approve it. State what you will build in that step first.
+
+## 3. While implementing
+
+- Minimal scope; match existing layout and conventions.
+- Run relevant tests before marking work done.
+- Update `docs/PROGRESS.md` (iteration, checklists, last updated, next up).
+
+## 4. After implementing
+
+Summarize what changed and which rules/docs you followed. Do not commit or push unless the user asks.

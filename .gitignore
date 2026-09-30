@@ -1,0 +1,22 @@
+# Local-only architecture spec (copy stays on your machine)
+local/architecture/goal-tracker-architecture-plan.md
+
+# Dependencies and build
+node_modules/
+dist/
+build/
+coverage/
+
+# Environment and secrets (agents must not edit these — use .env.example for templates)
+.env
+.env.local
+.env.*.local
+!.env.example
+credentials.json
+*.pem
+*.key
+secrets/
+
+# OS / IDE
+.DS_Store
+*.log

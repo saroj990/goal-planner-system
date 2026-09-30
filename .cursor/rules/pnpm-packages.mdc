@@ -1,0 +1,24 @@
+---
+description: Use pnpm only for installs, scripts, and workspace commands in this repo
+alwaysApply: true
+---
+
+# Package management — pnpm
+
+This monorepo uses **pnpm** exclusively.
+
+## Do
+
+- `pnpm install` at repo root (workspaces).
+- `pnpm --filter <package> <script>` or `pnpm -C frontend|backend <script>` for package-scoped commands.
+- Add dependencies with `pnpm add` / `pnpm add -D` from the correct package directory or via `--filter`.
+- Set `packageManager` in root `package.json` when the workspace exists (e.g. `pnpm@9.x`).
+
+## Do not
+
+- Use `npm install`, `npm run`, `yarn`, or `npx` for project dependency management (use `pnpm exec` / `pnpm dlx` when a one-off CLI is needed).
+- Add `package-lock.json` or `yarn.lock`; use **`pnpm-lock.yaml`** only.
+
+## Documentation
+
+README and CI must document pnpm commands, not npm/yarn equivalents.

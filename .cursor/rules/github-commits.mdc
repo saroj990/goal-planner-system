@@ -1,0 +1,44 @@
+---
+description: Git commit and GitHub workflow — when to commit, message format, safety
+alwaysApply: true
+---
+
+# GitHub commits
+
+## When to commit
+
+- Create commits **only when the user explicitly asks**. Do not commit opportunistically after edits.
+- Do **not** push to GitHub unless the user explicitly asks.
+
+## Before committing
+
+Run in parallel: `git status`, `git diff` (staged and unstaged), `git log -5 --oneline` (match existing message style when present).
+
+Stage only relevant files. **Never** commit secrets (see `secrets-env.mdc`). Warn if the user tries to include them.
+
+## Commit message format
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) with a short, imperative subject and optional body focused on **why**:
+
+```text
+<type>(<scope>): <subject>
+
+<body — optional, 1–2 sentences>
+```
+
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `build`.
+
+**Scope (examples):** `frontend`, `backend`, `goals`, `tasks`, `kanban`, `dashboard`, `docker`, `deps`.
+
+Pass the message via HEREDOC, e.g. `git commit -m "$(cat <<'EOF' ... EOF)"`.
+
+## Safety
+
+- Do not change `git config`.
+- No destructive commands (`push --force`, `reset --hard`, etc.) unless the user explicitly requests them; never force-push `main`/`master`.
+- No `--no-verify` / hook skips unless the user explicitly requests them.
+- Prefer a **new** commit over `git commit --amend` unless amend is explicitly requested and the last commit was not pushed.
+
+## Pull requests
+
+Use `gh` for GitHub PRs when asked. Summarize all commits on the branch, not only the latest.

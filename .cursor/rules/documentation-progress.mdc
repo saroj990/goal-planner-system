@@ -1,0 +1,46 @@
+---
+description: Keep project docs current and record roadmap stage after each completed step
+alwaysApply: true
+---
+
+# Documentation and progress tracking
+
+## Living status doc
+
+Maintain **`docs/PROGRESS.md`** as the single source for **where the project is now**.
+
+Update it **at the end of each meaningful step** (feature slice, iteration milestone, merged PR, or session that ships testable work)—not only when the user asks.
+
+## What to record in `docs/PROGRESS.md`
+
+- **Current iteration** (1–7 per local architecture plan §21) and overall status: `not started` | `in progress` | `done`.
+- **Last updated** date (ISO `YYYY-MM-DD`) and a one-line **current focus**.
+- Checklist items for the active iteration: mark complete with `[x]`, leave pending `[ ]`.
+- **Recently completed:** bullet list of what finished in the last step (files/areas optional, keep brief).
+- **Next up:** 1–3 concrete tasks.
+- **Blockers / decisions** (optional): short notes that affect future work.
+
+Do not remove history abruptly; move finished iteration summaries to a **Completed iterations** section when advancing.
+
+## Architecture plan vs progress
+
+| Document | Role |
+|----------|------|
+| `local/architecture/goal-tracker-architecture-plan.md` (gitignored) | Stable **spec** (domain, API, stack). Change only when design intentionally evolves; note the change in `docs/PROGRESS.md` under **Decisions**. |
+| `docs/PROGRESS.md` | **Execution tracker** — stage, checklists, what shipped. |
+
+## When implementation diverges from the plan
+
+1. Implement the agreed behavior.
+2. Add a **Decisions** entry in `docs/PROGRESS.md` (what changed and why).
+3. Update the architecture plan **only if** the divergence is permanent—not for temporary spikes.
+
+## Agent workflow
+
+Before closing a task:
+
+1. Run tests (per `testing-tdd.mdc`).
+2. Update `docs/PROGRESS.md` (iteration, checklists, last updated, next up).
+3. Mention in the reply which doc sections were updated so the user can skim.
+
+If the user completes work without you, still offer to sync `docs/PROGRESS.md` when they describe what landed.

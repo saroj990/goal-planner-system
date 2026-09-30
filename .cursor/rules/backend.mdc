@@ -1,0 +1,31 @@
+---
+description: NestJS backend modules and API conventions for Goal Tracker
+globs: backend/**/*.ts
+alwaysApply: false
+---
+
+# Backend (Goal Tracker)
+
+## Stack
+
+NestJS modular monolith, PostgreSQL, Prisma, JWT auth, validation with class-validator and/or Zod.
+
+## Modules
+
+`auth`, `users`, `goals`, `tasks`, `dashboard`, `progress`, plus `common` for shared filters, pipes, and errors.
+
+## Layering
+
+Per domain: controller → service → repository (or Prisma service). DTOs for create/update; validate input at the boundary.
+
+## API
+
+- Base path: `/api/v1`.
+- Goals and tasks CRUD as in the architecture plan.
+- Task status: `PATCH /api/v1/tasks/:id`.
+- Kanban order: `POST /api/v1/tasks/reorder` with positions; persist `position` on tasks.
+- Read models for `dashboard` and `progress` endpoints; avoid a separate analytics engine in V1.
+
+## Data model
+
+`users` → `goals` → `tasks`. Enforce `user_id` on goals and goal ownership on task mutations.

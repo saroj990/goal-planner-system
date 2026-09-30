@@ -1,0 +1,26 @@
+---
+description: React frontend stack and structure for Goal Tracker
+globs: frontend/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Frontend (Goal Tracker)
+
+## Stack
+
+React + TypeScript + Vite. UI: MUI. Server state: TanStack Query (not a global store for API data). Routing: React Router. Kanban DnD: dnd-kit. Charts (analytics): ECharts.
+
+## Structure
+
+Organize by **feature**: `src/features/goals`, `tasks`, `dashboard`, `progress` — each with `components/`, `hooks/`, `api/`, `types.ts`. Shared pieces in `src/components/`. App shell in `src/app/` (`router.tsx`, `providers.tsx`).
+
+## Patterns
+
+- Colocate API hooks with features; use query keys that reflect goal/task/dashboard boundaries.
+- Kanban: optimistic updates on drag/reorder; invalidate or patch cache after `PATCH` task and `POST` tasks/reorder.
+- Keep types aligned with REST DTOs (goal type/status vs task status enums).
+- Functional components; extract hooks when logic is reused across feature components.
+
+## UX scope
+
+Four primary areas: Dashboard, Goals (type tabs), Goal detail Kanban, Progress. Avoid JIRA-scale scope (sprints, epics, complex workflows).
