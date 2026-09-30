@@ -12,13 +12,7 @@ alwaysApply: true
 
 ## Git identity policy
 
-- Never set, change, or override `user.name`.
-- Never set, change, or override `user.email`.
-- Never use `git -c user.name=...` or `git -c user.email=...`.
-- Never configure a synthetic author such as CursorAgent, Cursor, AI Agent, or similar.
-- Always use the Git identity already configured by the user.
-- Git commit author identity must resolve from the repository's normal Git configuration, falling back to the user's global Git configuration.
-- Do not modify `.git/config` for identity purposes.
+Follow the `git-identity` skill (`.cursor/skills/git-identity/SKILL.md`).
 
 ## Before committing
 
