@@ -10,26 +10,15 @@ alwaysApply: true
 - Create commits **only when the user explicitly asks**. Do not commit opportunistically after edits.
 - Do **not** push to GitHub unless the user explicitly asks.
 
-## Commit author (default identity)
+## Git identity policy
 
-Use this author on **every** commit created in this repo. Do **not** run `git config` (global or local).
-
-| Field | Value |
-|-------|--------|
-| `user.name` | `saroj990` |
-| `user.email` | `sarojsasmal990@gmail.com` |
-
-Pass both via `-c` on the `git commit` invocation:
-
-```bash
-git -c user.name=saroj990 -c user.email=sarojsasmal990@gmail.com commit -m "$(cat <<'EOF'
-<type>(<scope>): subject
-
-EOF
-)"
-```
-
-If the user gives a different email for commits, use that instead and update this rule.
+- Never set, change, or override `user.name`.
+- Never set, change, or override `user.email`.
+- Never use `git -c user.name=...` or `git -c user.email=...`.
+- Never configure a synthetic author such as CursorAgent, Cursor, AI Agent, or similar.
+- Always use the Git identity already configured by the user.
+- Git commit author identity must resolve from the repository's normal Git configuration, falling back to the user's global Git configuration.
+- Do not modify `.git/config` for identity purposes.
 
 ## Before committing
 
@@ -51,11 +40,11 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) with a short, i
 
 **Scope (examples):** `frontend`, `backend`, `goals`, `tasks`, `kanban`, `dashboard`, `docker`, `deps`.
 
-Pass the message via HEREDOC with the **commit author `-c` flags** above (not plain `git commit` without them).
+Pass the message via HEREDOC, e.g. `git commit -m "$(cat <<'EOF' ... EOF)"`.
 
 ## Safety
 
-- Do not change `git config`.
+- Do not change `git config` (see Git identity policy above).
 - No destructive commands (`push --force`, `reset --hard`, etc.) unless the user explicitly requests them; never force-push `main`/`master`.
 - No `--no-verify` / hook skips unless the user explicitly requests them.
 - Prefer a **new** commit over `git commit --amend` unless amend is explicitly requested and the last commit was not pushed.
