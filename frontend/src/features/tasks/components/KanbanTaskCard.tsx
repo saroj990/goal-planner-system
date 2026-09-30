@@ -6,6 +6,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Link as RouterLink } from 'react-router-dom';
 import type { Task } from '../types';
+import { TaskDueDateBadge } from './TaskDueDateBadge';
 
 interface KanbanTaskCardProps {
   task: Task;
@@ -42,6 +43,7 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
         }}
       >
         <Typography variant="body2" fontWeight={600}>{task.title}</Typography>
+        <TaskDueDateBadge dueDate={task.dueDate} />
       </Paper>
     );
   }
@@ -83,6 +85,9 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
               {task.goalTitle}
             </Typography>
           )}
+          <Box onPointerDown={(e) => e.stopPropagation()}>
+            <TaskDueDateBadge dueDate={task.dueDate} />
+          </Box>
         </Box>
         <Stack direction="row" spacing={0} onPointerDown={(e) => e.stopPropagation()}>
           <IconButton size="small" aria-label="Edit task" onClick={() => onEdit(task)}>
