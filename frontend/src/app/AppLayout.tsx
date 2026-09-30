@@ -45,6 +45,19 @@ export function AppLayout() {
           >
             Goals
           </Typography>
+          <Typography
+            component={RouterLink}
+            to="/progress"
+            sx={{
+              color: 'text.secondary',
+              textDecoration: 'none',
+              fontWeight: 600,
+              fontSize: 14,
+              '&:hover': { color: 'primary.main' },
+            }}
+          >
+            Progress
+          </Typography>
         </Toolbar>
       </AppBar>
       <Container maxWidth="md" sx={{ py: 4, flex: 1 }}>
