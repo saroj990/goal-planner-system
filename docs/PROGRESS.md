@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 2 — Goals  
+**Current iteration:** 3 — Tasks (next)  
 **Status:** in progress  
-**Current focus:** Goals API done; next — Goals UI (tabs, list, detail).
+**Current focus:** Iteration 2 Goals UI complete; start Tasks API.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -23,11 +23,10 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ### Iteration 2 — Goals
 
-- [x] Create / edit / delete goal (REST API)
+- [x] Create / edit / delete goal (REST API + UI)
 - [x] Goal list
-- [x] Daily / weekly / monthly (query filter `?type=`)
-- [ ] Goal detail (frontend)
-- [ ] Goals UI (tabs + cards)
+- [x] Daily / weekly / monthly (tabs + API filter)
+- [x] Goal detail (frontend)
 
 ### Iteration 3 — Tasks
 
@@ -68,14 +67,14 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 4 — Goals API:** `GoalsModule` CRUD at `/api/v1/goals`, type filter, DTO validation, dev user via `UsersService` until JWT.
+- **Step 5 — Goals UI:** React Router, TanStack Query, MUI goals list with type tabs, create dialog, goal detail (edit/delete). Backend CORS for local dev.
 
 ---
 
 ## Next up
 
-1. **Goals frontend:** React Router, TanStack Query, Daily/Weekly/Monthly tabs, list + create/edit + detail route
-2. **Iteration 3:** Tasks API under goals
+1. **Iteration 3:** Tasks API under goals
+2. Task list on goal detail page
 
 ---
 
@@ -90,6 +89,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | Prisma `cuid` IDs; goal/task enums per architecture plan; `onDelete: Cascade` goal→tasks. |
 | 2026-09-30 | API errors: `statusCode`, `error`, `message`, `path`, `timestamp` via global exception filter. |
 | 2026-09-30 | Pre-auth: single dev user `dev@goaltracker.local` (upsert) owns all goals. |
+| 2026-09-30 | Frontend API base via `VITE_API_URL` (see `.env.example`). |
 
 ---
 

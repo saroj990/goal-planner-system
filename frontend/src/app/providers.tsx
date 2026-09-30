@@ -1,5 +1,6 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { PropsWithChildren } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { PropsWithChildren, useState } from 'react';
 
 const theme = createTheme({
   palette: {
@@ -11,10 +12,14 @@ const theme = createTheme({
 });
 
 export function AppProviders({ children }: PropsWithChildren) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

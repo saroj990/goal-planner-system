@@ -1,16 +1,20 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { AppProviders } from './providers';
-import { AppShell } from './AppShell';
+import { HomePage } from '../pages/HomePage';
 
-describe('AppShell', () => {
-  it('renders the application title', () => {
+describe('HomePage', () => {
+  it('renders the application title and link to goals', () => {
     render(
       <AppProviders>
-        <AppShell />
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
       </AppProviders>,
     );
 
     expect(screen.getByRole('heading', { name: /goal tracker/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /view goals/i })).toHaveAttribute('href', '/goals');
   });
 });

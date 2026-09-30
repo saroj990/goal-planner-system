@@ -52,7 +52,7 @@ pnpm --filter @goal-tracker/frontend dev
 
 | App      | URL                                      |
 |----------|------------------------------------------|
-| Frontend | http://localhost:5173                    |
+| Frontend | http://localhost:5173 — `/goals` for Daily/Weekly/Monthly lists |
 | Backend  | http://localhost:3000/api/v1/health (`database: up` when Postgres is running) |
 
 ### Goals API (Iteration 2 — backend)
