@@ -67,6 +67,16 @@ Until auth ships, goals are scoped to an auto-created dev user (`dev@goaltracker
 | `PATCH` | `/api/v1/goals/:id` | |
 | `DELETE` | `/api/v1/goals/:id` | `204` |
 
+### Tasks API (Iteration 3 — backend)
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `POST` | `/api/v1/goals/:goalId/tasks` | Body: `title`, optional `description`, `dueDate`, `priority`; assigns `position` |
+| `GET` | `/api/v1/goals/:goalId/tasks` | Ordered by `position` |
+| `GET` | `/api/v1/tasks/:id` | |
+| `PATCH` | `/api/v1/tasks/:id` | `status`: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` |
+| `DELETE` | `/api/v1/tasks/:id` | `204` |
+
 ### API errors
 
 Validation and HTTP errors use a consistent JSON body:

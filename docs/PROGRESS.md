@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 3 — Tasks (next)  
+**Current iteration:** 3 — Tasks  
 **Status:** in progress  
-**Current focus:** Iteration 2 Goals UI complete; start Tasks API.
+**Current focus:** Step 6 (Tasks API) done; next — Step 7 Tasks UI on goal detail.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -30,9 +30,10 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ### Iteration 3 — Tasks
 
-- [ ] Create / edit / delete task
-- [ ] Task status
-- [ ] Task → goal relationship
+- [x] Create / edit / delete task (REST API)
+- [x] Task status (`PATCH`)
+- [x] Task → goal relationship (nested routes + ownership)
+- [ ] Tasks UI on goal detail
 
 ### Iteration 4 — Kanban
 
@@ -67,14 +68,14 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 5 — Goals UI:** React Router, TanStack Query, MUI goals list with type tabs, create dialog, goal detail (edit/delete). Backend CORS for local dev.
+- **Step 6 — Tasks API:** nested `POST/GET .../goals/:goalId/tasks`, `GET/PATCH/DELETE /tasks/:id`, auto `position`, status + `completedAt` on `DONE`, integration tests.
 
 ---
 
 ## Next up
 
-1. **Iteration 3:** Tasks API under goals
-2. Task list on goal detail page
+1. **Step 7:** Tasks list + CRUD UI on `GoalDetailPage`
+2. **Iteration 4:** Kanban + reorder endpoint
 
 ---
 
@@ -90,6 +91,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | API errors: `statusCode`, `error`, `message`, `path`, `timestamp` via global exception filter. |
 | 2026-09-30 | Pre-auth: single dev user `dev@goaltracker.local` (upsert) owns all goals. |
 | 2026-09-30 | Frontend API base via `VITE_API_URL` (see `.env.example`). |
+| 2026-09-30 | New tasks get `position` in steps of 100 per goal. |
 
 ---
 

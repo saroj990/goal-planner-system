@@ -4,6 +4,7 @@ import { resolve } from 'path';
 import { GoalsModule } from './goals/goals.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     HealthModule,
     GoalsModule,
+    TasksModule,
   ],
 })
 export class AppModule {}
