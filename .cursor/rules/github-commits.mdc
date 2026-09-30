@@ -10,6 +10,27 @@ alwaysApply: true
 - Create commits **only when the user explicitly asks**. Do not commit opportunistically after edits.
 - Do **not** push to GitHub unless the user explicitly asks.
 
+## Commit author (default identity)
+
+Use this author on **every** commit created in this repo. Do **not** run `git config` (global or local).
+
+| Field | Value |
+|-------|--------|
+| `user.name` | `saroj990` |
+| `user.email` | `saroj990@github.com` |
+
+Pass both via `-c` on the `git commit` invocation:
+
+```bash
+git -c user.name=saroj990 -c user.email=saroj990@github.com commit -m "$(cat <<'EOF'
+<type>(<scope>): subject
+
+EOF
+)"
+```
+
+If the user gives a different email for commits, use that instead and update this rule.
+
 ## Before committing
 
 Run in parallel: `git status`, `git diff` (staged and unstaged), `git log -5 --oneline` (match existing message style when present).
@@ -30,7 +51,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) with a short, i
 
 **Scope (examples):** `frontend`, `backend`, `goals`, `tasks`, `kanban`, `dashboard`, `docker`, `deps`.
 
-Pass the message via HEREDOC, e.g. `git commit -m "$(cat <<'EOF' ... EOF)"`.
+Pass the message via HEREDOC with the **commit author `-c` flags** above (not plain `git commit` without them).
 
 ## Safety
 
