@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { resolve } from 'path';
+import { GoalsModule } from './goals/goals.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -12,6 +13,7 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     PrismaModule,
     HealthModule,
+    GoalsModule,
   ],
 })
 export class AppModule {}

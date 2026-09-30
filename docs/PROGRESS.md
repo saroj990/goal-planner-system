@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 2 — Goals (starting)  
+**Current iteration:** 2 — Goals  
 **Status:** in progress  
-**Current focus:** Step 3 done; next — Goals REST CRUD (Iteration 2).
+**Current focus:** Goals API done; next — Goals UI (tabs, list, detail).
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -23,10 +23,11 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ### Iteration 2 — Goals
 
-- [ ] Create / edit / delete goal
-- [ ] Goal list
-- [ ] Daily / weekly / monthly
-- [ ] Goal detail
+- [x] Create / edit / delete goal (REST API)
+- [x] Goal list
+- [x] Daily / weekly / monthly (query filter `?type=`)
+- [ ] Goal detail (frontend)
+- [ ] Goals UI (tabs + cards)
 
 ### Iteration 3 — Tasks
 
@@ -67,14 +68,14 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 3 — API foundation:** `configureApp()` (global prefix, `ValidationPipe`, `HttpExceptionFilter`), consistent `ApiErrorResponse`, Prisma `P2002` → 409, tests for validation/404/error shape.
+- **Step 4 — Goals API:** `GoalsModule` CRUD at `/api/v1/goals`, type filter, DTO validation, dev user via `UsersService` until JWT.
 
 ---
 
 ## Next up
 
-1. **Iteration 2 / Step 4:** `goals` module — CRUD, enums, list by type (temporary dev user or seed until auth)
-2. Goals UI (tabs + list + detail shell)
+1. **Goals frontend:** React Router, TanStack Query, Daily/Weekly/Monthly tabs, list + create/edit + detail route
+2. **Iteration 3:** Tasks API under goals
 
 ---
 
@@ -88,6 +89,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | `before-implementing.mdc` — follow all rules and user step approval before coding. |
 | 2026-09-30 | Prisma `cuid` IDs; goal/task enums per architecture plan; `onDelete: Cascade` goal→tasks. |
 | 2026-09-30 | API errors: `statusCode`, `error`, `message`, `path`, `timestamp` via global exception filter. |
+| 2026-09-30 | Pre-auth: single dev user `dev@goaltracker.local` (upsert) owns all goals. |
 
 ---
 

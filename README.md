@@ -55,6 +55,18 @@ pnpm --filter @goal-tracker/frontend dev
 | Frontend | http://localhost:5173                    |
 | Backend  | http://localhost:3000/api/v1/health (`database: up` when Postgres is running) |
 
+### Goals API (Iteration 2 — backend)
+
+Until auth ships, goals are scoped to an auto-created dev user (`dev@goaltracker.local`).
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/api/v1/goals` | Optional query `?type=DAILY\|WEEKLY\|MONTHLY` |
+| `POST` | `/api/v1/goals` | Body: `title`, `type`, optional `description`, `startDate`, `dueDate`, `priority` |
+| `GET` | `/api/v1/goals/:id` | |
+| `PATCH` | `/api/v1/goals/:id` | |
+| `DELETE` | `/api/v1/goals/:id` | `204` |
+
 ### API errors
 
 Validation and HTTP errors use a consistent JSON body:
