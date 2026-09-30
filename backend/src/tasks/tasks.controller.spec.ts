@@ -107,4 +107,34 @@ describeIfDb('Tasks API (integration)', () => {
       .send({ title: 'Nope' })
       .expect(404);
   });
+
+  it('POST /tasks/reorder updates status and positions', async () => {
+    const a = await request(app.getHttpServer())
+      .post(`/api/v1/goals/${goalId}/tasks`)
+      .send({ title: 'Reorder A' })
+      .expect(201);
+    const b = await request(app.getHttpServer())
+      .post(`/api/v1/goals/${goalId}/tasks`)
+      .send({ title: 'Reorder B' })
+      .expect(201);
+    createdTaskIds.push(a.body.id, b.body.id);
+
+    const reordered = await request(app.getHttpServer())
+      .post('/api/v1/tasks/reorder')
+      .send({
+        goalId,
+        items: [
+          { id: b.body.id, status: TaskStatus.IN_PROGRESS, position: 100 },
+          { id: a.body.id, status: TaskStatus.TODO, position: 200 },
+        ],
+      })
+      .expect(200);
+
+    expect(reordered.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: b.body.id, status: TaskStatus.IN_PROGRESS, position: 100 }),
+        expect.objectContaining({ id: a.body.id, status: TaskStatus.TODO, position: 200 }),
+      ]),
+    );
+  });
 });

@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, Task, TaskStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 const POSITION_STEP = 100;
@@ -68,6 +69,41 @@ export class TasksService {
   async remove(taskId: string): Promise<void> {
     await this.assertTaskOwned(taskId);
     await this.prisma.task.delete({ where: { id: taskId } });
+  }
+
+  async reorder(dto: ReorderTasksDto): Promise<Task[]> {
+    await this.assertGoalOwned(dto.goalId);
+    const userId = await this.usersService.getDevUserId();
+    const taskIds = dto.items.map((item) => item.id);
+
+    const existing = await this.prisma.task.findMany({
+      where: { id: { in: taskIds }, goalId: dto.goalId, goal: { userId } },
+      select: { id: true },
+    });
+
+    if (existing.length !== dto.items.length) {
+      throw new NotFoundException('One or more tasks not found for this goal');
+    }
+
+    const uniquePositions = new Set(dto.items.map((item) => item.position));
+    if (uniquePositions.size !== dto.items.length) {
+      throw new BadRequestException('Task positions must be unique');
+    }
+
+    await this.prisma.$transaction(
+      dto.items.map((item) =>
+        this.prisma.task.update({
+          where: { id: item.id },
+          data: {
+            status: item.status,
+            position: item.position,
+            completedAt: item.status === TaskStatus.DONE ? new Date() : null,
+          },
+        }),
+      ),
+    );
+
+    return this.findByGoal(dto.goalId);
   }
 
   private async nextPosition(goalId: string): Promise<number> {

@@ -76,6 +76,7 @@ Until auth ships, goals are scoped to an auto-created dev user (`dev@goaltracker
 | `GET` | `/api/v1/tasks/:id` | |
 | `PATCH` | `/api/v1/tasks/:id` | `status`: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` |
 | `DELETE` | `/api/v1/tasks/:id` | `204` |
+| `POST` | `/api/v1/tasks/reorder` | Body: `goalId`, `items[]` with `id`, `status`, `position` |
 
 ### API errors
 

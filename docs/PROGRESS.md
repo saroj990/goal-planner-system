@@ -3,7 +3,7 @@
 **Last updated:** 2026-09-30  
 **Current iteration:** 4 — Kanban (next)  
 **Status:** in progress  
-**Current focus:** Step 7 done; Kanban + reorder API next.
+**Current focus:** Step 8 done; Step 9 Kanban UI in progress.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -39,7 +39,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 - [ ] Columns: Todo, In Progress, Blocked, Done
 - [ ] Drag and drop
-- [ ] Ordering (`position`, reorder API)
+- [x] Ordering (`position`, reorder API)
 - [ ] Optimistic updates
 
 ### Iteration 5 — Dashboard
@@ -68,14 +68,13 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 7 — Tasks UI + modern theme:** `features/tasks`, goal detail task list, Inter font, indigo theme, `.cursor/skills/modern-ui/`.
+- **Step 8 — Reorder API:** `POST /api/v1/tasks/reorder` with validation and integration tests.
 
 ---
 
 ## Next up
 
-1. **Iteration 4:** Kanban board on goal detail + `POST /tasks/reorder`
-2. dnd-kit + optimistic updates
+1. **Step 9:** Kanban board (dnd-kit) + optimistic reorder on goal detail
 
 ---
 
