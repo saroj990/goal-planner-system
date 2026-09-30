@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 1 — Project Foundation (complete except CI)  
+**Current iteration:** 2 — Goals (starting)  
 **Status:** in progress  
-**Current focus:** Step 3 — API base (validation, errors); then Iteration 2 Goals API.
+**Current focus:** Step 3 done; next — Goals REST CRUD (Iteration 2).
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -67,14 +67,14 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 2 — Data layer:** `compose.yaml` (Postgres 16), Prisma models/enums (`users`, `goals`, `tasks`), initial migration, `PrismaModule`, health reports `database: up|down`, integration test for user→goal→task.
+- **Step 3 — API foundation:** `configureApp()` (global prefix, `ValidationPipe`, `HttpExceptionFilter`), consistent `ApiErrorResponse`, Prisma `P2002` → 409, tests for validation/404/error shape.
 
 ---
 
 ## Next up
 
-1. **Step 3:** Global validation pipe, consistent API errors, optional DB check in CI  
-2. **Iteration 2:** Goals REST CRUD + frontend goals feature
+1. **Iteration 2 / Step 4:** `goals` module — CRUD, enums, list by type (temporary dev user or seed until auth)
+2. Goals UI (tabs + list + detail shell)
 
 ---
 
@@ -87,6 +87,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | **pnpm** only for package management; never modify `.env` or secret files (Cursor rules). |
 | 2026-09-30 | `before-implementing.mdc` — follow all rules and user step approval before coding. |
 | 2026-09-30 | Prisma `cuid` IDs; goal/task enums per architecture plan; `onDelete: Cascade` goal→tasks. |
+| 2026-09-30 | API errors: `statusCode`, `error`, `message`, `path`, `timestamp` via global exception filter. |
 
 ---
 

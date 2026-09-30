@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../app.module';
+import { configureApp } from '../common/configure-app';
 import { PrismaService } from '../prisma/prisma.service';
 
 describe('Health (GET /api/v1/health)', () => {
@@ -22,7 +23,7 @@ describe('Health (GET /api/v1/health)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api/v1');
+    configureApp(app);
     await app.init();
   });
 

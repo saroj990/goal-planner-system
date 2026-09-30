@@ -55,6 +55,22 @@ pnpm --filter @goal-tracker/frontend dev
 | Frontend | http://localhost:5173                    |
 | Backend  | http://localhost:3000/api/v1/health (`database: up` when Postgres is running) |
 
+### API errors
+
+Validation and HTTP errors use a consistent JSON body:
+
+```json
+{
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": ["email must be an email"],
+  "path": "/api/v1/goals",
+  "timestamp": "2026-09-30T12:00:00.000Z"
+}
+```
+
+Global `ValidationPipe` strips unknown properties (`whitelist`). Prisma unique violations map to `409 Conflict`.
+
 ## Test & build
 
 ```bash
