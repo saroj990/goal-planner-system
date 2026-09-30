@@ -1,4 +1,14 @@
-import { Card, CardActionArea, CardContent, Chip, Stack, Typography } from '@mui/material';
+import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
+import {
+  Button,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  Chip,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import type { Goal } from '../types';
 
@@ -41,6 +51,16 @@ export function GoalCard({ goal }: GoalCardProps) {
           </Typography>
         </CardContent>
       </CardActionArea>
+      <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
+        <Button
+          component={RouterLink}
+          to={`/goals/${goal.id}#task-board`}
+          size="small"
+          startIcon={<ViewKanbanOutlinedIcon />}
+        >
+          Open board
+        </Button>
+      </CardActions>
     </Card>
   );
 }

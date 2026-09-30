@@ -28,7 +28,7 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
   };
 
   return (
-    <Box sx={{ mt: 3 }}>
+    <Box id="task-board" sx={{ mt: 3, scrollMarginTop: 24 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2.5 }}>
         <Box>
           <Typography variant="h5" component="h2">Task board</Typography>

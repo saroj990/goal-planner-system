@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { GoalDetailPage } from '../pages/GoalDetailPage';
 import { GoalsPage } from '../pages/GoalsPage';
+import { BoardPage } from '../pages/BoardPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { HomePage } from '../pages/HomePage';
 import { ProgressPage } from '../pages/ProgressPage';
@@ -14,6 +15,7 @@ export function AppRouter() {
           <Route index element={<DashboardPage />} />
           <Route path="welcome" element={<HomePage />} />
           <Route path="progress" element={<ProgressPage />} />
+          <Route path="board" element={<BoardPage />} />
           <Route path="goals" element={<GoalsPage />} />
           <Route path="goals/:id" element={<GoalDetailPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

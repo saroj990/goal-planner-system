@@ -12,8 +12,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { GoalFormDialog } from '../features/goals/components/GoalFormDialog';
 import { useGoalMutations } from '../features/goals/hooks/useGoalMutations';
 import { useGoal } from '../features/goals/hooks/useGoals';
@@ -22,10 +22,17 @@ import { GoalTasksSection } from '../features/tasks/components/GoalTasksSection'
 
 export function GoalDetailPage() {
   const { id = '' } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { data: goal, isLoading, isError, error } = useGoal(id);
   const { update, remove } = useGoalMutations(goal?.type);
   const [editOpen, setEditOpen] = useState(false);
+
+  useEffect(() => {
+    if (location.hash !== '#task-board' || isLoading || !goal) return;
+    const el = document.getElementById('task-board');
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [location.hash, isLoading, goal?.id]);
 
   if (isLoading) {
     return (

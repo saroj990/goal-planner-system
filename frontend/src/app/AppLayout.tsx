@@ -1,6 +1,7 @@
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined';
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined';
+import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { radius } from './theme';
@@ -9,6 +10,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 const navItems = [
   { to: '/', label: 'Dashboard', icon: DashboardOutlinedIcon, end: true },
   { to: '/goals', label: 'Goals', icon: FlagOutlinedIcon, end: false },
+  { to: '/board', label: 'Board', icon: ViewKanbanOutlinedIcon, end: false },
   { to: '/progress', label: 'Progress', icon: ShowChartOutlinedIcon, end: false },
 ] as const;
 
