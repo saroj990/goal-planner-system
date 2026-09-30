@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 1 — Project Foundation  
+**Current iteration:** 1 — Project Foundation (complete except CI)  
 **Status:** in progress  
-**Current focus:** Step 1 done; next — Postgres, Prisma, Docker Compose (Step 2).
+**Current focus:** Step 3 — API base (validation, errors); then Iteration 2 Goals API.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -16,8 +16,8 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 - [x] Monorepo layout (`frontend/`, `backend/`)
 - [x] Frontend (React + Vite + TypeScript + MUI shell)
 - [x] Backend (NestJS + `GET /api/v1/health`)
-- [ ] PostgreSQL + Prisma schema (users, goals, tasks)
-- [ ] Docker Compose
+- [x] PostgreSQL + Prisma schema (users, goals, tasks)
+- [x] Docker Compose (`compose.yaml`)
 - [ ] CI
 - [x] Environment configuration (`.env.example` only; no committed `.env`)
 
@@ -67,15 +67,14 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 1 — Monorepo shell:** pnpm workspaces, `frontend/` (Vite, React, MUI, Vitest), `backend/` (NestJS health API), root `README.md`, `.env.example`, tests green (`pnpm test`), builds (`pnpm build`).
+- **Step 2 — Data layer:** `compose.yaml` (Postgres 16), Prisma models/enums (`users`, `goals`, `tasks`), initial migration, `PrismaModule`, health reports `database: up|down`, integration test for user→goal→task.
 
 ---
 
 ## Next up
 
-1. **Step 2:** Docker Compose Postgres + Prisma schema (`users`, `goals`, `tasks`) + migration tests  
-2. Wire `DATABASE_URL` locally (user-managed `.env`, not in repo)  
-3. **Step 3:** API base (validation pipe, error format) on top of DB
+1. **Step 3:** Global validation pipe, consistent API errors, optional DB check in CI  
+2. **Iteration 2:** Goals REST CRUD + frontend goals feature
 
 ---
 
@@ -87,6 +86,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | Architecture plan moved to `local/architecture/` and gitignored. |
 | 2026-09-30 | **pnpm** only for package management; never modify `.env` or secret files (Cursor rules). |
 | 2026-09-30 | `before-implementing.mdc` — follow all rules and user step approval before coding. |
+| 2026-09-30 | Prisma `cuid` IDs; goal/task enums per architecture plan; `onDelete: Cascade` goal→tasks. |
 
 ---
 

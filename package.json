@@ -6,6 +6,10 @@
     "dev": "pnpm run -r --parallel dev",
     "build": "pnpm run -r build",
     "test": "pnpm run -r test",
-    "lint": "pnpm run -r lint"
+    "lint": "pnpm run -r lint",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @goal-tracker/backend db:migrate",
+    "db:migrate:deploy": "pnpm --filter @goal-tracker/backend db:migrate:deploy"
   }
 }

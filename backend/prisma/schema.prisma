@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum GoalType {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  DONE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  goals     Goal[]
+
+  @@map("users")
+}
+
+model Goal {
+  id          String     @id @default(cuid())
+  userId      String     @map("user_id")
+  title       String
+  description String?
+  type        GoalType
+  startDate   DateTime?  @map("start_date") @db.Date
+  dueDate     DateTime?  @map("due_date") @db.Date
+  status      GoalStatus @default(ACTIVE)
+  priority    Int?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  completedAt DateTime?  @map("completed_at")
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@index([userId])
+  @@map("goals")
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  goalId      String     @map("goal_id")
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Int?
+  position    Int
+  dueDate     DateTime?  @map("due_date") @db.Date
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  completedAt DateTime?  @map("completed_at")
+  goal        Goal       @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+  @@map("tasks")
+}

@@ -6,6 +6,7 @@ Personal goal and task management (V1). Monorepo: React frontend + NestJS backen
 
 - Node.js 20+
 - [pnpm](https://pnpm.io/) 10+
+- [Docker](https://www.docker.com/) (for PostgreSQL)
 
 ## Setup
 
@@ -17,10 +18,22 @@ Copy environment templates (set values locally; **do not commit** `.env`):
 
 ```bash
 cp .env.example .env
-# Optional: copy vars into frontend/.env if you use Vite env files there
 ```
 
 See `.env.example` for `PORT`, `DATABASE_URL`, and `VITE_API_URL`.
+
+### Database (PostgreSQL)
+
+```bash
+pnpm db:up
+pnpm db:migrate:deploy
+```
+
+`DATABASE_URL` in `.env` should match Docker defaults:
+
+`postgresql://postgres:postgres@localhost:5432/goaltracker`
+
+Stop Postgres: `pnpm db:down`
 
 ## Development
 
@@ -40,7 +53,7 @@ pnpm --filter @goal-tracker/frontend dev
 | App      | URL                                      |
 |----------|------------------------------------------|
 | Frontend | http://localhost:5173                    |
-| Backend  | http://localhost:3000/api/v1/health      |
+| Backend  | http://localhost:3000/api/v1/health (`database: up` when Postgres is running) |
 
 ## Test & build
 
