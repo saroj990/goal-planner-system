@@ -1,6 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Alert, Box, Button, CircularProgress, Paper, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
+import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { useTaskMutations } from '../hooks/useTaskMutations';
 import { useTasksForGoal } from '../hooks/useTasks';
 import type { Task } from '../types';
@@ -16,6 +17,7 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
   const { create, update, remove, reorder } = useTaskMutations(goalId);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const openCreate = () => {
     setEditing(null);
@@ -59,10 +61,7 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
             goalId={goalId}
             tasks={tasks ?? []}
             onEdit={openEdit}
-            onDelete={async (task) => {
-              if (!window.confirm(`Delete task "${task.title}"?`)) return;
-              await remove.mutateAsync(task.id);
-            }}
+            onDelete={(task) => setTaskToDelete(task)}
             onReorder={(payload) => {
               reorder.mutate(payload);
             }}
@@ -80,6 +79,25 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
           } else {
             await create.mutateAsync(input);
           }
+        }}
+      />
+
+      <ConfirmDialog
+        open={taskToDelete !== null}
+        title="Delete task?"
+        description={
+          taskToDelete
+            ? `"${taskToDelete.title}" will be permanently removed.`
+            : ''
+        }
+        confirmLabel="Delete"
+        destructive
+        loading={remove.isPending}
+        onCancel={() => setTaskToDelete(null)}
+        onConfirm={async () => {
+          if (!taskToDelete) return;
+          await remove.mutateAsync(taskToDelete.id);
+          setTaskToDelete(null);
         }}
       />
     </Box>

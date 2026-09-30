@@ -18,6 +18,7 @@ import { GoalFormDialog } from '../features/goals/components/GoalFormDialog';
 import { useGoalMutations } from '../features/goals/hooks/useGoalMutations';
 import { useGoal } from '../features/goals/hooks/useGoals';
 import type { CreateGoalInput } from '../features/goals/types';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { GoalTasksSection } from '../features/tasks/components/GoalTasksSection';
 
 export function GoalDetailPage() {
@@ -27,6 +28,7 @@ export function GoalDetailPage() {
   const { data: goal, isLoading, isError, error } = useGoal(id);
   const { update, remove } = useGoalMutations(goal?.type);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (location.hash !== '#task-board' || isLoading || !goal) return;
@@ -49,12 +51,6 @@ export function GoalDetailPage() {
       </Alert>
     );
   }
-
-  const handleDelete = async () => {
-    if (!window.confirm(`Delete goal "${goal.title}"?`)) return;
-    await remove.mutateAsync(goal.id);
-    navigate('/goals');
-  };
 
   return (
     <Box>
@@ -93,7 +89,7 @@ export function GoalDetailPage() {
             <IconButton aria-label="Edit goal" onClick={() => setEditOpen(true)}>
               <EditOutlinedIcon />
             </IconButton>
-            <IconButton aria-label="Delete goal" color="error" onClick={handleDelete}>
+            <IconButton aria-label="Delete goal" color="error" onClick={() => setDeleteOpen(true)}>
               <DeleteOutlineIcon />
             </IconButton>
           </Stack>
@@ -109,6 +105,21 @@ export function GoalDetailPage() {
         onClose={() => setEditOpen(false)}
         onSubmit={async (input: CreateGoalInput) => {
           await update.mutateAsync({ id: goal.id, input });
+        }}
+      />
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title="Delete goal?"
+        description={`"${goal.title}" and all of its tasks will be permanently removed.`}
+        confirmLabel="Delete"
+        destructive
+        loading={remove.isPending}
+        onCancel={() => setDeleteOpen(false)}
+        onConfirm={async () => {
+          await remove.mutateAsync(goal.id);
+          setDeleteOpen(false);
+          navigate('/goals');
         }}
       />
     </Box>
