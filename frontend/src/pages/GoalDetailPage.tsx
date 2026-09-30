@@ -64,7 +64,7 @@ export function GoalDetailPage() {
               {goal.title}
             </Typography>
             <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap" useFlexGap>
-              <Chip label={goal.type} size="small" sx={{ bgcolor: '#eef2ff', color: '#4338ca' }} />
+              <Chip label={goal.type} size="small" color="primary" variant="outlined" />
               <Chip label={goal.status} size="small" variant="outlined" />
             </Stack>
             {goal.description && (

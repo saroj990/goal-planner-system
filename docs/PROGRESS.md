@@ -100,6 +100,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | Kanban reorder sends full task list with status + position per drag. |
 | 2026-09-30 | Progress API returns per-day buckets for goal types + task completions (`?days=`). |
 | 2026-09-30 | **Single workspace Kanban** at `/board` (`GET /tasks`, `POST /tasks/reorder-board`); goal detail uses task list only. |
+| 2026-09-30 | Default **dark theme** (black surfaces) with sidebar toggle; preference stored in `localStorage`. |
 
 ---
 

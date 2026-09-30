@@ -23,16 +23,20 @@ export function KanbanColumn({ status, tasks, onEdit, onDelete }: KanbanColumnPr
   return (
     <Paper
       ref={setNodeRef}
-      sx={{
+      sx={(theme) => ({
         p: 1.5,
         display: 'flex',
         flexDirection: 'column',
         minHeight: 320,
-        bgcolor: isOver ? alpha('#2563eb', 0.06) : alpha('#0f172a', 0.02),
-        outline: isOver ? `2px solid ${alpha('#2563eb', 0.35)}` : 'none',
+        bgcolor: isOver
+          ? alpha(theme.palette.primary.main, 0.1)
+          : theme.palette.mode === 'dark'
+            ? alpha('#ffffff', 0.03)
+            : alpha('#0f172a', 0.02),
+        outline: isOver ? `2px solid ${alpha(theme.palette.primary.main, 0.45)}` : 'none',
         outlineOffset: -1,
         transition: 'background-color 0.15s ease, outline 0.15s ease',
-      }}
+      })}
     >
       <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5, px: 0.25 }}>
         <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />

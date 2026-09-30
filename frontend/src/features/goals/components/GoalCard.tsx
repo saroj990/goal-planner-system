@@ -39,11 +39,7 @@ export function GoalCard({ goal }: GoalCardProps) {
             <Typography variant="h6" component="h2" fontWeight={600}>
               {goal.title}
             </Typography>
-            <Chip
-              label={goal.status}
-              size="small"
-              sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }}
-            />
+            <Chip label={goal.status} size="small" variant="outlined" />
           </Stack>
           <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
             {goal.type}

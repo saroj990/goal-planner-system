@@ -1,11 +1,13 @@
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined';
 import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
-import { Box, Divider, Stack, Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
-import { radius } from './theme';
+import { Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { NavLink, Outlet } from 'react-router-dom';
+import { useThemeMode } from './ThemeModeProvider';
+import { radius } from './theme';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: DashboardOutlinedIcon, end: true },
@@ -15,6 +17,8 @@ const navItems = [
 ] as const;
 
 export function AppLayout() {
+  const { mode, toggleMode } = useThemeMode();
+
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: 'background.default' }}>
       <Box
@@ -62,7 +66,7 @@ export function AppLayout() {
               to={to}
               end={end}
               title={label}
-              sx={{
+              sx={(theme) => ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1.5,
@@ -76,19 +80,33 @@ export function AppLayout() {
                 justifyContent: { xs: 'center', sm: 'flex-start' },
                 '&.active': {
                   color: 'primary.main',
-                  bgcolor: alpha('#6366f1', 0.1),
+                  bgcolor: theme.palette.action.selected,
                 },
                 '&:hover': {
-                  bgcolor: alpha('#0f172a', 0.04),
+                  bgcolor: theme.palette.action.hover,
                   color: 'text.primary',
                 },
-              }}
+              })}
             >
               <Icon sx={{ fontSize: 22 }} />
               <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>{label}</Box>
             </Box>
           ))}
         </Stack>
+
+        <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'}>
+          <IconButton
+            onClick={toggleMode}
+            aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            sx={{
+              alignSelf: { xs: 'center', sm: 'flex-start' },
+              ml: { sm: 0.5 },
+              color: 'text.secondary',
+            }}
+          >
+            {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+          </IconButton>
+        </Tooltip>
       </Box>
 
       <Box
