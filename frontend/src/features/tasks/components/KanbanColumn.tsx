@@ -26,7 +26,6 @@ export function KanbanColumn({ status, tasks, onEdit, onDelete }: KanbanColumnPr
         display: 'flex',
         flexDirection: 'column',
         minHeight: 320,
-        borderRadius: radius.surface,
         bgcolor: isOver ? alpha('#6366f1', 0.06) : 'transparent',
         outline: isOver ? `2px solid ${alpha('#6366f1', 0.35)}` : 'none',
         outlineOffset: 2,
@@ -63,7 +62,7 @@ export function KanbanColumn({ status, tasks, onEdit, onDelete }: KanbanColumnPr
         sx={{
           flex: 1,
           p: 1.25,
-          borderRadius: radius.control,
+          borderRadius: radius.card,
           bgcolor: alpha('#0f172a', 0.03),
           border: '1px solid',
           borderColor: alpha('#0f172a', 0.06),

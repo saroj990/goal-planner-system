@@ -1,10 +1,13 @@
 import { createTheme, alpha } from '@mui/material/styles';
 
-/** Fixed radii (px) — avoid MUI `borderRadius: N` multiplier on large shape values. */
+/** Fixed radii (px) — avoid MUI `borderRadius: N` theme multipliers on surfaces. */
 export const radius = {
+  /** Cards, panels, and paper surfaces */
+  card: 8,
+  /** Buttons, inputs, chips, nav items */
   control: 6,
-  surface: 8,
-  panel: 10,
+  /** Modals */
+  dialog: 10,
 } as const;
 
 export const appTheme = createTheme({
@@ -57,7 +60,7 @@ export const appTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: radius.surface,
+          borderRadius: radius.card,
           border: `1px solid ${alpha('#0f172a', 0.08)}`,
           boxShadow: 'none',
         },
@@ -68,7 +71,7 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          borderRadius: radius.surface,
+          borderRadius: radius.card,
           border: `1px solid ${alpha('#0f172a', 0.06)}`,
         },
       },
@@ -76,7 +79,7 @@ export const appTheme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: {
-          borderRadius: radius.surface,
+          borderRadius: radius.card,
         },
       },
     },
@@ -87,7 +90,7 @@ export const appTheme = createTheme({
     },
     MuiDialog: {
       styleOverrides: {
-        paper: { borderRadius: radius.panel },
+        paper: { borderRadius: radius.dialog },
       },
     },
     MuiTextField: {

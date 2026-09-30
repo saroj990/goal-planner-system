@@ -4,7 +4,6 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Box, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { radius } from '../../../app/theme';
 import type { Task } from '../types';
 import { TASK_STATUS_LABEL } from '../taskStatusStyle';
 
@@ -35,7 +34,6 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
         elevation={4}
         sx={{
           p: 1.75,
-          borderRadius: radius.control,
           cursor: 'grabbing',
           bgcolor: 'background.paper',
           border: '1px solid',
@@ -57,7 +55,6 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
       {...listeners}
       sx={{
         p: 1.75,
-        borderRadius: radius.control,
         cursor: 'grab',
         bgcolor: 'background.paper',
         border: '1px solid',
