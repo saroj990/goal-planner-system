@@ -17,12 +17,12 @@ Use this author on **every** commit created in this repo. Do **not** run `git co
 | Field | Value |
 |-------|--------|
 | `user.name` | `saroj990` |
-| `user.email` | `saroj990@github.com` |
+| `user.email` | `sarojsasmal990@gmail.com` |
 
 Pass both via `-c` on the `git commit` invocation:
 
 ```bash
-git -c user.name=saroj990 -c user.email=saroj990@github.com commit -m "$(cat <<'EOF'
+git -c user.name=saroj990 -c user.email=sarojsasmal990@gmail.com commit -m "$(cat <<'EOF'
 <type>(<scope>): subject
 
 EOF
