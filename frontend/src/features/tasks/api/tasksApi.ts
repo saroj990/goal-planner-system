@@ -22,3 +22,15 @@ export function updateTask(taskId: string, input: UpdateTaskInput): Promise<Task
 export function deleteTask(taskId: string): Promise<void> {
   return apiRequest<void>(`/tasks/${taskId}`, { method: 'DELETE' });
 }
+
+export interface ReorderTasksInput {
+  goalId: string;
+  items: { id: string; status: string; position: number }[];
+}
+
+export function reorderTasks(input: ReorderTasksInput): Promise<Task[]> {
+  return apiRequest<Task[]>('/tasks/reorder', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}

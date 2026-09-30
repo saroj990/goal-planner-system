@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 4 — Kanban (next)  
+**Current iteration:** 5 — Dashboard (next)  
 **Status:** in progress  
-**Current focus:** Step 8 done; Step 9 Kanban UI in progress.
+**Current focus:** Iteration 4 Kanban complete; start Dashboard API/UI.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -37,10 +37,10 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ### Iteration 4 — Kanban
 
-- [ ] Columns: Todo, In Progress, Blocked, Done
-- [ ] Drag and drop
+- [x] Columns: Todo, In Progress, Blocked, Done
+- [x] Drag and drop (dnd-kit)
 - [x] Ordering (`position`, reorder API)
-- [ ] Optimistic updates
+- [x] Optimistic updates
 
 ### Iteration 5 — Dashboard
 
@@ -68,13 +68,14 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 8 — Reorder API:** `POST /api/v1/tasks/reorder` with validation and integration tests.
+- **Step 9 — Kanban UI:** Four-column board on goal detail, dnd-kit drag/drop, optimistic `POST /tasks/reorder`.
 
 ---
 
 ## Next up
 
-1. **Step 9:** Kanban board (dnd-kit) + optimistic reorder on goal detail
+1. **Iteration 5:** `GET /dashboard` + dashboard screen
+2. Optional: CI workflow
 
 ---
 
@@ -92,6 +93,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | Frontend API base via `VITE_API_URL` (see `.env.example`). |
 | 2026-09-30 | New tasks get `position` in steps of 100 per goal. |
 | 2026-09-30 | Modern UI skill + shared `app/theme.ts` (Inter, indigo, soft surfaces). |
+| 2026-09-30 | Kanban reorder sends full task list with status + position per drag. |
 
 ---
 
