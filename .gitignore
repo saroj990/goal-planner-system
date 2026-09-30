@@ -6,6 +6,9 @@ node_modules/
 dist/
 build/
 coverage/
+test-results/
+playwright-report/
+blob-report/
 
 # Environment and secrets (agents must not edit these — use .env.example for templates)
 .env
