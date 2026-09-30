@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Alert, Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Paper, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTaskMutations } from '../hooks/useTaskMutations';
 import { useTasksForGoal } from '../hooks/useTasks';
@@ -28,9 +28,14 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
   };
 
   return (
-    <Box sx={{ mt: 5 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h5" component="h2">Board</Typography>
+    <Box sx={{ mt: 3 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2.5 }}>
+        <Box>
+          <Typography variant="h5" component="h2">Task board</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+            Drag cards across To do, In progress, and Done.
+          </Typography>
+        </Box>
         <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={openCreate}>
           Add task
         </Button>
@@ -43,24 +48,26 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
       )}
 
       {isError && (
-        <Alert severity="error" sx={{ borderRadius: 2 }}>
+        <Alert severity="error">
           {error instanceof Error ? error.message : 'Failed to load tasks'}
         </Alert>
       )}
 
       {!isLoading && !isError && (
-        <KanbanBoard
-          goalId={goalId}
-          tasks={tasks ?? []}
-          onEdit={openEdit}
-          onDelete={async (task) => {
-            if (!window.confirm(`Delete task "${task.title}"?`)) return;
-            await remove.mutateAsync(task.id);
-          }}
-          onReorder={(payload) => {
-            reorder.mutate(payload);
-          }}
-        />
+        <Paper sx={{ p: { xs: 1.5, md: 2.5 } }}>
+          <KanbanBoard
+            goalId={goalId}
+            tasks={tasks ?? []}
+            onEdit={openEdit}
+            onDelete={async (task) => {
+              if (!window.confirm(`Delete task "${task.title}"?`)) return;
+              await remove.mutateAsync(task.id);
+            }}
+            onReorder={(payload) => {
+              reorder.mutate(payload);
+            }}
+          />
+        </Paper>
       )}
 
       <TaskFormDialog

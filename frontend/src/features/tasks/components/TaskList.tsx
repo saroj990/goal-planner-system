@@ -31,7 +31,6 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
           textAlign: 'center',
           borderStyle: 'dashed',
           bgcolor: 'background.paper',
-          borderRadius: 3,
         }}
       >
         <Typography fontWeight={600} gutterBottom>No tasks yet</Typography>
@@ -50,7 +49,6 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
           elevation={0}
           sx={{
             p: 2,
-            borderRadius: 3,
             display: 'flex',
             alignItems: 'center',
             gap: 2,

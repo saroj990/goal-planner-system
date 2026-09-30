@@ -3,7 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 export function HomePage() {
   return (
-    <Paper sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, textAlign: 'center' }}>
+    <Paper sx={{ p: { xs: 3, sm: 5 }, textAlign: 'center' }}>
       <Stack spacing={2} alignItems="center">
         <Typography component="h1" variant="h4">
           Your goals, one calm place

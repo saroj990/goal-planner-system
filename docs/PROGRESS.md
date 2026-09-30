@@ -5,6 +5,8 @@
 **Status:** in progress  
 **Current focus:** JWT auth and production deploy path remain for V1 completion.
 
+**UI refresh (2026-09-30):** Sidebar navigation, calmer theme, Kanban cross-column drag (todo → in progress → done).
+
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
 ---

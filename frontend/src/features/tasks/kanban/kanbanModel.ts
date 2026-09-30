@@ -75,6 +75,25 @@ export function moveTaskInColumns(
   return next;
 }
 
+export function findTaskStatus(
+  columns: Record<TaskStatus, Task[]>,
+  taskId: string,
+): TaskStatus | null {
+  for (const status of KANBAN_COLUMN_ORDER) {
+    if (columns[status].some((t) => t.id === taskId)) return status;
+  }
+  return null;
+}
+
+export function resolveColumnFromOverId(
+  columns: Record<TaskStatus, Task[]>,
+  overId: string,
+): TaskStatus | null {
+  const columnStatus = parseColumnDropId(overId);
+  if (columnStatus) return columnStatus;
+  return findTaskStatus(columns, overId);
+}
+
 export function resolveDropTarget(
   columns: Record<TaskStatus, Task[]>,
   overId: string,
@@ -91,6 +110,29 @@ export function resolveDropTarget(
     }
   }
   return null;
+}
+
+/** Move task while dragging across columns (dnd-kit multi-container pattern). */
+export function dragOverColumns(
+  columns: Record<TaskStatus, Task[]>,
+  activeId: string,
+  overId: string,
+): Record<TaskStatus, Task[]> | null {
+  if (activeId === overId) return null;
+
+  const activeStatus = findTaskStatus(columns, activeId);
+  const overStatus = resolveColumnFromOverId(columns, overId);
+  if (!activeStatus || !overStatus) return null;
+
+  const drop = resolveDropTarget(columns, overId);
+  if (!drop) return null;
+
+  if (activeStatus === drop.status) {
+    const activeIndex = columns[activeStatus].findIndex((t) => t.id === activeId);
+    if (activeIndex === drop.index || activeIndex === drop.index - 1) return null;
+  }
+
+  return moveTaskInColumns(columns, activeId, drop.status, drop.index);
 }
 
 export function tasksFromColumns(columns: Record<TaskStatus, Task[]>): Task[] {

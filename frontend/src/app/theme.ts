@@ -1,15 +1,22 @@
 import { createTheme, alpha } from '@mui/material/styles';
 
+/** Fixed radii (px) — avoid MUI `borderRadius: N` multiplier on large shape values. */
+export const radius = {
+  control: 6,
+  surface: 8,
+  panel: 10,
+} as const;
+
 export const appTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#6366f1',
-      light: '#818cf8',
-      dark: '#4f46e5',
+      main: '#2563eb',
+      light: '#3b82f6',
+      dark: '#1d4ed8',
     },
     background: {
-      default: '#f3f4f8',
+      default: '#f8fafc',
       paper: '#ffffff',
     },
     text: {
@@ -21,19 +28,19 @@ export const appTheme = createTheme({
   typography: {
     fontFamily:
       '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    h4: { fontWeight: 700, letterSpacing: '-0.02em' },
-    h5: { fontWeight: 600, letterSpacing: '-0.01em' },
+    h4: { fontWeight: 700, letterSpacing: '-0.025em', fontSize: '1.75rem' },
+    h5: { fontWeight: 600, letterSpacing: '-0.02em' },
+    h6: { fontWeight: 600 },
     button: { fontWeight: 600 },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: radius.control,
   },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundImage: `radial-gradient(ellipse 80% 50% at 50% -20%, ${alpha('#6366f1', 0.12)}, transparent)`,
-          backgroundAttachment: 'fixed',
+          backgroundColor: '#f8fafc',
         },
       },
     },
@@ -42,53 +49,59 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 10,
-          paddingInline: 16,
+          borderRadius: radius.control,
+          paddingInline: 14,
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
+          borderRadius: radius.surface,
+          border: `1px solid ${alpha('#0f172a', 0.08)}`,
+          boxShadow: 'none',
+        },
+      },
+    },
+    MuiPaper: {
+      defaultProps: { elevation: 0 },
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+          borderRadius: radius.surface,
           border: `1px solid ${alpha('#0f172a', 0.06)}`,
-          boxShadow: `0 1px 2px ${alpha('#0f172a', 0.04)}`,
-          transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: radius.surface,
         },
       },
     },
     MuiChip: {
       styleOverrides: {
-        root: { fontWeight: 600, borderRadius: 8 },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: alpha('#ffffff', 0.72),
-          backdropFilter: 'blur(12px)',
-          borderBottom: `1px solid ${alpha('#0f172a', 0.06)}`,
-          color: '#0f172a',
-        },
+        root: { fontWeight: 600, borderRadius: radius.control },
       },
     },
     MuiDialog: {
       styleOverrides: {
-        paper: { borderRadius: 16 },
+        paper: { borderRadius: radius.panel },
       },
     },
     MuiTextField: {
       styleOverrides: {
         root: {
-          '& .MuiOutlinedInput-root': { borderRadius: 10 },
+          '& .MuiOutlinedInput-root': { borderRadius: radius.control },
         },
       },
     },
     MuiTabs: {
       styleOverrides: {
         root: {
-          minHeight: 44,
-          '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 44 },
+          minHeight: 40,
+          '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 40 },
         },
       },
     },

@@ -37,7 +37,7 @@ export function GoalsPage() {
         </Button>
       </Stack>
 
-      <Paper sx={{ px: 2, py: 1, borderRadius: 3, mb: 3 }}>
+      <Paper sx={{ px: 2, py: 1, mb: 3 }}>
         <GoalTypeTabs value={type} onChange={setType} />
       </Paper>
 
@@ -48,7 +48,7 @@ export function GoalsPage() {
       )}
 
       {isError && (
-        <Alert severity="error" sx={{ borderRadius: 2 }}>
+        <Alert severity="error">
           {error instanceof Error ? error.message : 'Failed to load goals'}
         </Alert>
       )}
@@ -56,7 +56,7 @@ export function GoalsPage() {
       {!isLoading && !isError && (
         <Stack spacing={2}>
           {goals?.length === 0 && (
-            <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 3, borderStyle: 'dashed' }}>
+            <Paper sx={{ p: 4, textAlign: 'center', borderStyle: 'dashed' }}>
               <Typography fontWeight={600}>No {type.toLowerCase()} goals yet</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 Create one to start tracking tasks.

@@ -51,13 +51,13 @@ export function ProgressPage() {
       )}
 
       {isError && (
-        <Alert severity="error" sx={{ borderRadius: 2 }}>
+        <Alert severity="error">
           {error instanceof Error ? error.message : 'Failed to load progress'}
         </Alert>
       )}
 
       {data && (
-        <Paper sx={{ p: 2, borderRadius: 4 }}>
+        <Paper sx={{ p: 2 }}>
           <CompletionChart days={data.days} />
         </Paper>
       )}

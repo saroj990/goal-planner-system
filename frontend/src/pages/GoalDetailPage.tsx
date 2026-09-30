@@ -37,7 +37,7 @@ export function GoalDetailPage() {
 
   if (isError || !goal) {
     return (
-      <Alert severity="error" sx={{ borderRadius: 2 }}>
+      <Alert severity="error">
         {error instanceof Error ? error.message : 'Goal not found'}
       </Alert>
     );
@@ -61,7 +61,7 @@ export function GoalDetailPage() {
         Goals
       </Button>
 
-      <Paper sx={{ p: 3, borderRadius: 4, mb: 1 }}>
+      <Paper sx={{ p: 3, mb: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={2}>
           <Box>
             <Typography component="h1" variant="h4" gutterBottom>

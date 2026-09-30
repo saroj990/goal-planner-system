@@ -14,7 +14,7 @@ export function CompletionChart({ days }: { days: ProgressDayPoint[] }) {
     const labels = days.map((d) => d.date.slice(5));
 
     chart.setOption({
-      color: ['#4f46e5', '#0ea5e9', '#a855f7', '#22c55e'],
+      color: ['#2563eb', '#0ea5e9', '#7c3aed', '#16a34a'],
       tooltip: { trigger: 'axis' },
       legend: { bottom: 0, data: ['Daily goals', 'Weekly goals', 'Monthly goals', 'Tasks'] },
       grid: { left: 40, right: 16, top: 24, bottom: 48 },

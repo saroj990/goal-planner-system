@@ -32,7 +32,7 @@ export function DashboardPage() {
 
   if (isError || !data) {
     return (
-      <Alert severity="error" sx={{ borderRadius: 2 }}>
+      <Alert severity="error">
         {error instanceof Error ? error.message : 'Failed to load dashboard'}
       </Alert>
     );
@@ -47,7 +47,7 @@ export function DashboardPage() {
         </Typography>
       </Box>
 
-      <Paper sx={{ p: 3, borderRadius: 4 }}>
+      <Paper sx={{ p: 3 }}>
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
           Today&apos;s progress
         </Typography>
@@ -59,14 +59,14 @@ export function DashboardPage() {
         <LinearProgress
           variant="determinate"
           value={data.completionPercent}
-          sx={{ height: 10, borderRadius: 5 }}
+          sx={{ height: 8, borderRadius: '4px' }}
         />
         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
           {data.completionPercent}% complete (daily goals & tasks)
         </Typography>
       </Paper>
 
-      <Paper sx={{ p: 3, borderRadius: 4 }}>
+      <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>Today&apos;s goals</Typography>
         {data.todaysGoals.length === 0 ? (
           <Typography variant="body2" color="text.secondary">No active daily goals.</Typography>
@@ -91,7 +91,7 @@ export function DashboardPage() {
       </Paper>
 
       {data.overdueGoals.length > 0 && (
-        <Paper sx={{ p: 3, borderRadius: 4, borderColor: 'error.light', border: 1 }}>
+        <Paper sx={{ p: 3, borderColor: 'error.light', border: 1 }}>
           <Typography variant="h6" color="error" gutterBottom>Overdue</Typography>
           <Stack spacing={1}>
             {data.overdueGoals.map((goal) => (
@@ -109,7 +109,7 @@ export function DashboardPage() {
         </Paper>
       )}
 
-      <Paper sx={{ p: 3, borderRadius: 4 }}>
+      <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>Today&apos;s tasks by status</Typography>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
           <TaskColumn title="To do" tasks={data.tasksByStatus.todo} />
