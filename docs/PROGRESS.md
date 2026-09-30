@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
 **Last updated:** 2026-09-30  
-**Current iteration:** 5 — Dashboard (next)  
+**Current iteration:** 7 — Production hardening (in progress)  
 **Status:** in progress  
-**Current focus:** Iteration 4 Kanban complete; start Dashboard API/UI.
+**Current focus:** JWT auth and production deploy path remain for V1 completion.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -18,7 +18,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 - [x] Backend (NestJS + `GET /api/v1/health`)
 - [x] PostgreSQL + Prisma schema (users, goals, tasks)
 - [x] Docker Compose (`compose.yaml`)
-- [ ] CI
+- [x] CI (GitHub Actions)
 - [x] Environment configuration (`.env.example` only; no committed `.env`)
 
 ### Iteration 2 — Goals
@@ -44,22 +44,22 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ### Iteration 5 — Dashboard
 
-- [ ] Today's goals and tasks
-- [ ] Completion %
-- [ ] Active goals
-- [ ] Overdue items
+- [x] Today's goals and tasks
+- [x] Completion %
+- [x] Active goals
+- [x] Overdue items
 
 ### Iteration 6 — Analytics
 
-- [ ] Daily / weekly / monthly completion
-- [ ] Charts (ECharts)
-- [ ] Calendar and history
+- [x] Daily / weekly / monthly completion (by goal type over time)
+- [x] Charts (ECharts)
+- [ ] Calendar and history (deferred post-V1 unless needed)
 
 ### Iteration 7 — Production hardening
 
-- [ ] Authentication and authorization
-- [ ] Validation, errors, logging
-- [ ] Testing (Vitest + Playwright)
+- [ ] Authentication and authorization (JWT)
+- [x] Validation, errors, logging (HTTP request logging)
+- [x] Testing (Vitest + Playwright smoke)
 - [ ] Docker production path, backup, monitoring
 
 **V1 complete** when Iteration 7 is done.
@@ -68,14 +68,16 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
-- **Step 9 — Kanban UI:** Four-column board on goal detail, dnd-kit drag/drop, optimistic `POST /tasks/reorder`.
+- **Step 13 — Progress UI:** ECharts completion chart, `/progress` route.
+- **Step 11–12 — Dashboard & progress APIs:** `GET /dashboard`, `GET /progress`.
+- **Step 14–16 — Hardening:** CI workflow, HTTP logging, Playwright welcome smoke test.
 
 ---
 
 ## Next up
 
-1. **Iteration 5:** `GET /dashboard` + dashboard screen
-2. Optional: CI workflow
+1. **JWT auth** — replace dev user scoping with login/register and guards.
+2. Optional: production Docker/Nginx path per architecture plan.
 
 ---
 
@@ -94,9 +96,10 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | New tasks get `position` in steps of 100 per goal. |
 | 2026-09-30 | Modern UI skill + shared `app/theme.ts` (Inter, indigo, soft surfaces). |
 | 2026-09-30 | Kanban reorder sends full task list with status + position per drag. |
+| 2026-09-30 | Progress API returns per-day buckets for goal types + task completions (`?days=`). |
 
 ---
 
 ## Completed iterations
 
-_None yet._
+Iterations 1–6 (except calendar/history) and partial Iteration 7 (CI, logging, Playwright).
