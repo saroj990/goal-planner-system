@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ReorderBoardDto } from './dto/reorder-board.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TasksService } from './tasks.service';
@@ -21,6 +22,17 @@ export class TasksController {
   @HttpCode(HttpStatus.OK)
   reorder(@Body() dto: ReorderTasksDto) {
     return this.tasksService.reorder(dto);
+  }
+
+  @Post('reorder-board')
+  @HttpCode(HttpStatus.OK)
+  reorderBoard(@Body() dto: ReorderBoardDto) {
+    return this.tasksService.reorderBoard(dto);
+  }
+
+  @Get()
+  findAll() {
+    return this.tasksService.findAllForUser();
   }
 
   @Get(':id')

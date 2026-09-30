@@ -54,11 +54,11 @@ export function GoalCard({ goal }: GoalCardProps) {
       <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
         <Button
           component={RouterLink}
-          to={`/goals/${goal.id}#task-board`}
+          to="/board"
           size="small"
           startIcon={<ViewKanbanOutlinedIcon />}
         >
-          Open board
+          Board
         </Button>
       </CardActions>
     </Card>

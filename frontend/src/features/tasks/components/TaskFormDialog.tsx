@@ -7,7 +7,7 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { CreateTaskInput, Task } from '../types';
 
 interface TaskFormDialogProps {
@@ -15,9 +15,10 @@ interface TaskFormDialogProps {
   initial?: Task | null;
   onClose: () => void;
   onSubmit: (input: CreateTaskInput) => Promise<void>;
+  extraFields?: ReactNode;
 }
 
-export function TaskFormDialog({ open, initial, onClose, onSubmit }: TaskFormDialogProps) {
+export function TaskFormDialog({ open, initial, onClose, onSubmit, extraFields }: TaskFormDialogProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -51,6 +52,7 @@ export function TaskFormDialog({ open, initial, onClose, onSubmit }: TaskFormDia
       <DialogTitle>{initial ? 'Edit task' : 'New task'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
+          {extraFields}
           <TextField
             label="What needs to be done?"
             value={title}

@@ -68,7 +68,7 @@ export function AppLayout() {
                 gap: 1.5,
                 px: { xs: 1, sm: 1.5 },
                 py: 1.25,
-                borderRadius: radius.control,
+                borderRadius: `${radius.control}px`,
                 textDecoration: 'none',
                 color: 'text.secondary',
                 fontWeight: 600,

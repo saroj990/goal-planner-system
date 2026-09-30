@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TaskStatus } from '../types';
 import type { Task } from '../types';
 import {
+  buildBoardReorderPayload,
   buildReorderPayload,
   columnDropId,
   dragOverColumns,
@@ -26,6 +27,18 @@ const baseTask = (overrides: Partial<Task>): Task => ({
 });
 
 describe('kanbanModel', () => {
+  it('buildBoardReorderPayload assigns global board positions', () => {
+    const columns = groupTasksByStatus([
+      baseTask({ id: 'a', status: TaskStatus.TODO, position: 100 }),
+      baseTask({ id: 'b', status: TaskStatus.DONE, position: 200 }),
+    ]);
+    const payload = buildBoardReorderPayload(columns);
+    expect(payload.items).toEqual([
+      { id: 'a', status: TaskStatus.TODO, position: 100 },
+      { id: 'b', status: TaskStatus.DONE, position: 200 },
+    ]);
+  });
+
   it('buildReorderPayload assigns positions across columns', () => {
     const columns = groupTasksByStatus([
       baseTask({ id: 'a', status: TaskStatus.TODO, position: 100 }),

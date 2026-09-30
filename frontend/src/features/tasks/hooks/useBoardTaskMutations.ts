@@ -1,37 +1,39 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createTask, deleteTask, reorderTasks, updateTask } from '../api/tasksApi';
-import type { ReorderTasksInput } from '../api/tasksApi';
+import { createTask, deleteTask, reorderBoardTasks, updateTask } from '../api/tasksApi';
+import type { ReorderBoardInput } from '../api/tasksApi';
 import type { CreateTaskInput, Task, UpdateTaskInput } from '../types';
 import { tasksQueryKeys } from './useTasks';
 
-export function useTaskMutations(goalId: string) {
+export function useBoardTaskMutations() {
   const queryClient = useQueryClient();
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: tasksQueryKeys.byGoal(goalId) });
+
+  const invalidateBoard = () => {
     queryClient.invalidateQueries({ queryKey: tasksQueryKeys.all });
+    queryClient.invalidateQueries({ queryKey: ['tasks', 'goal'] });
   };
 
   const create = useMutation({
-    mutationFn: (input: CreateTaskInput) => createTask(goalId, input),
-    onSuccess: invalidate,
+    mutationFn: ({ goalId, input }: { goalId: string; input: CreateTaskInput }) =>
+      createTask(goalId, input),
+    onSuccess: invalidateBoard,
   });
 
   const update = useMutation({
     mutationFn: ({ taskId, input }: { taskId: string; input: UpdateTaskInput }) =>
       updateTask(taskId, input),
-    onSuccess: invalidate,
+    onSuccess: invalidateBoard,
   });
 
   const remove = useMutation({
     mutationFn: (taskId: string) => deleteTask(taskId),
-    onSuccess: invalidate,
+    onSuccess: invalidateBoard,
   });
 
   const reorder = useMutation({
-    mutationFn: (input: ReorderTasksInput) => reorderTasks(input),
+    mutationFn: (input: ReorderBoardInput) => reorderBoardTasks(input),
     onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: tasksQueryKeys.byGoal(goalId) });
-      const previous = queryClient.getQueryData<Task[]>(tasksQueryKeys.byGoal(goalId));
+      await queryClient.cancelQueries({ queryKey: tasksQueryKeys.all });
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKeys.all);
       if (previous) {
         const byId = new Map(previous.map((t) => [t.id, t]));
         const optimistic = input.items
@@ -45,16 +47,16 @@ export function useTaskMutations(goalId: string) {
             };
           })
           .filter(Boolean) as Task[];
-        queryClient.setQueryData(tasksQueryKeys.byGoal(goalId), optimistic);
+        queryClient.setQueryData(tasksQueryKeys.all, optimistic);
       }
       return { previous };
     },
     onError: (_error, _input, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(tasksQueryKeys.byGoal(goalId), context.previous);
+        queryClient.setQueryData(tasksQueryKeys.all, context.previous);
       }
     },
-    onSettled: invalidate,
+    onSettled: invalidateBoard,
   });
 
   return { create, update, remove, reorder };

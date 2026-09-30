@@ -108,6 +108,53 @@ describeIfDb('Tasks API (integration)', () => {
       .expect(404);
   });
 
+  it('GET /tasks lists all user tasks with goalTitle', async () => {
+    const created = await request(app.getHttpServer())
+      .post(`/api/v1/goals/${goalId}/tasks`)
+      .send({ title: 'Board list task' })
+      .expect(201);
+    createdTaskIds.push(created.body.id);
+
+    const list = await request(app.getHttpServer()).get('/api/v1/tasks').expect(200);
+    expect(list.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: created.body.id,
+          goalTitle: 'Goal for tasks',
+        }),
+      ]),
+    );
+  });
+
+  it('POST /tasks/reorder-board updates tasks across the workspace board', async () => {
+    const a = await request(app.getHttpServer())
+      .post(`/api/v1/goals/${goalId}/tasks`)
+      .send({ title: 'Board A' })
+      .expect(201);
+    const b = await request(app.getHttpServer())
+      .post(`/api/v1/goals/${goalId}/tasks`)
+      .send({ title: 'Board B' })
+      .expect(201);
+    createdTaskIds.push(a.body.id, b.body.id);
+
+    const reordered = await request(app.getHttpServer())
+      .post('/api/v1/tasks/reorder-board')
+      .send({
+        items: [
+          { id: b.body.id, status: TaskStatus.DONE, position: 100 },
+          { id: a.body.id, status: TaskStatus.TODO, position: 200 },
+        ],
+      })
+      .expect(200);
+
+    expect(reordered.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: b.body.id, status: TaskStatus.DONE }),
+        expect.objectContaining({ id: a.body.id, status: TaskStatus.TODO }),
+      ]),
+    );
+  });
+
   it('POST /tasks/reorder updates status and positions', async () => {
     const a = await request(app.getHttpServer())
       .post(`/api/v1/goals/${goalId}/tasks`)

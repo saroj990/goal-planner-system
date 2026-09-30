@@ -1,12 +1,14 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Alert, Box, Button, CircularProgress, Paper, Stack, Typography } from '@mui/material';
+import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
+import { Alert, Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { useTaskMutations } from '../hooks/useTaskMutations';
 import { useTasksForGoal } from '../hooks/useTasks';
 import type { Task } from '../types';
-import { KanbanBoard } from './KanbanBoard';
 import { TaskFormDialog } from './TaskFormDialog';
+import { TaskList } from './TaskList';
 
 interface GoalTasksSectionProps {
   goalId: string;
@@ -14,7 +16,7 @@ interface GoalTasksSectionProps {
 
 export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
   const { data: tasks, isLoading, isError, error } = useTasksForGoal(goalId);
-  const { create, update, remove, reorder } = useTaskMutations(goalId);
+  const { create, update, remove } = useTaskMutations(goalId);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
@@ -30,17 +32,34 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
   };
 
   return (
-    <Box id="task-board" sx={{ mt: 3, scrollMarginTop: 24 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2.5 }}>
+    <Box sx={{ mt: 3 }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        spacing={1.5}
+        sx={{ mb: 2.5 }}
+      >
         <Box>
-          <Typography variant="h5" component="h2">Task board</Typography>
+          <Typography variant="h5" component="h2">Tasks</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
-            Drag cards across To do, In progress, and Done.
+            Tasks for this goal. Drag and status changes happen on the shared board.
           </Typography>
         </Box>
-        <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={openCreate}>
-          Add task
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button
+            component={RouterLink}
+            to="/board"
+            size="small"
+            variant="outlined"
+            startIcon={<ViewKanbanOutlinedIcon />}
+          >
+            Open board
+          </Button>
+          <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={openCreate}>
+            Add task
+          </Button>
+        </Stack>
       </Stack>
 
       {isLoading && (
@@ -56,17 +75,14 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
       )}
 
       {!isLoading && !isError && (
-        <Paper sx={{ p: { xs: 1.5, md: 2.5 } }}>
-          <KanbanBoard
-            goalId={goalId}
-            tasks={tasks ?? []}
-            onEdit={openEdit}
-            onDelete={(task) => setTaskToDelete(task)}
-            onReorder={(payload) => {
-              reorder.mutate(payload);
-            }}
-          />
-        </Paper>
+        <TaskList
+          tasks={tasks ?? []}
+          onEdit={openEdit}
+          onDelete={(task) => setTaskToDelete(task)}
+          onStatusChange={async (task, status) => {
+            await update.mutateAsync({ taskId: task.id, input: { status } });
+          }}
+        />
       )}
 
       <TaskFormDialog
@@ -86,9 +102,7 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
         open={taskToDelete !== null}
         title="Delete task?"
         description={
-          taskToDelete
-            ? `"${taskToDelete.title}" will be permanently removed.`
-            : ''
+          taskToDelete ? `"${taskToDelete.title}" will be permanently removed.` : ''
         }
         confirmLabel="Delete"
         destructive

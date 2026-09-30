@@ -4,8 +4,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Box, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Link as RouterLink } from 'react-router-dom';
 import type { Task } from '../types';
-import { TASK_STATUS_LABEL } from '../taskStatusStyle';
 
 interface KanbanTaskCardProps {
   task: Task;
@@ -71,9 +71,18 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
           <Typography variant="body2" fontWeight={600} sx={{ wordBreak: 'break-word', lineHeight: 1.4 }}>
             {task.title}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.25, display: 'block' }}>
-            {TASK_STATUS_LABEL[task.status]}
-          </Typography>
+          {task.goalTitle && (
+            <Typography
+              component={RouterLink}
+              to={`/goals/${task.goalId}`}
+              variant="caption"
+              color="text.secondary"
+              onPointerDown={(e) => e.stopPropagation()}
+              sx={{ mt: 0.25, display: 'block', textDecoration: 'none', '&:hover': { color: 'primary.main' } }}
+            >
+              {task.goalTitle}
+            </Typography>
+          )}
         </Box>
         <Stack direction="row" spacing={0} onPointerDown={(e) => e.stopPropagation()}>
           <IconButton size="small" aria-label="Edit task" onClick={() => onEdit(task)}>

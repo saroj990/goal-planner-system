@@ -10,6 +10,14 @@ export const radius = {
   dialog: 10,
 } as const;
 
+const cardBorderColor = alpha('#0f172a', 0.06);
+
+/** Use in `sx` — values must be px strings (numbers multiply by theme.shape.borderRadius). */
+export const cardSurface = {
+  borderRadius: `${radius.card}px`,
+  border: `1px solid ${cardBorderColor}`,
+} as const;
+
 export const appTheme = createTheme({
   palette: {
     mode: 'light',
@@ -61,7 +69,7 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: radius.card,
-          border: `1px solid ${alpha('#0f172a', 0.08)}`,
+          border: `1px solid ${alpha('#0f172a', 0.08)}`, // Card: slightly stronger edge than Paper
           boxShadow: 'none',
         },
       },
@@ -72,7 +80,7 @@ export const appTheme = createTheme({
         root: {
           backgroundImage: 'none',
           borderRadius: radius.card,
-          border: `1px solid ${alpha('#0f172a', 0.06)}`,
+          border: cardSurface.border,
         },
       },
     },

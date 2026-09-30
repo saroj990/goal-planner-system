@@ -35,7 +35,7 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
       >
         <Typography fontWeight={600} gutterBottom>No tasks yet</Typography>
         <Typography variant="body2" color="text.secondary">
-          Break this goal into small steps—you can add Kanban columns later.
+          Add tasks here or on the shared board.
         </Typography>
       </Paper>
     );

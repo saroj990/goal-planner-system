@@ -3,6 +3,7 @@ import { Prisma, Task, TaskStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { ReorderBoardDto } from './dto/reorder-board.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
@@ -37,6 +38,22 @@ export class TasksService {
       where: { goalId },
       orderBy: { position: 'asc' },
     });
+  }
+
+  async findAllForUser(): Promise<
+    Array<Task & { goalTitle: string }>
+  > {
+    const userId = await this.usersService.getDevUserId();
+    const tasks = await this.prisma.task.findMany({
+      where: { goal: { userId } },
+      orderBy: [{ position: 'asc' }, { updatedAt: 'asc' }],
+      include: { goal: { select: { title: true } } },
+    });
+
+    return tasks.map(({ goal, ...task }) => ({
+      ...task,
+      goalTitle: goal.title,
+    }));
   }
 
   async findOne(taskId: string): Promise<Task> {
@@ -104,6 +121,40 @@ export class TasksService {
     );
 
     return this.findByGoal(dto.goalId);
+  }
+
+  async reorderBoard(dto: ReorderBoardDto): Promise<Array<Task & { goalTitle: string }>> {
+    const userId = await this.usersService.getDevUserId();
+    const taskIds = dto.items.map((item) => item.id);
+
+    const existing = await this.prisma.task.findMany({
+      where: { id: { in: taskIds }, goal: { userId } },
+      select: { id: true },
+    });
+
+    if (existing.length !== dto.items.length) {
+      throw new NotFoundException('One or more tasks not found');
+    }
+
+    const uniquePositions = new Set(dto.items.map((item) => item.position));
+    if (uniquePositions.size !== dto.items.length) {
+      throw new BadRequestException('Task positions must be unique');
+    }
+
+    await this.prisma.$transaction(
+      dto.items.map((item) =>
+        this.prisma.task.update({
+          where: { id: item.id },
+          data: {
+            status: item.status,
+            position: item.position,
+            completedAt: item.status === TaskStatus.DONE ? new Date() : null,
+          },
+        }),
+      ),
+    );
+
+    return this.findAllForUser();
   }
 
   private async nextPosition(goalId: string): Promise<number> {

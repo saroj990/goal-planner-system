@@ -17,7 +17,7 @@ import { Box } from '@mui/material';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   KANBAN_COLUMN_ORDER,
-  buildReorderPayload,
+  buildBoardReorderPayload,
   dragOverColumns,
   groupTasksByStatus,
 } from '../kanban/kanbanModel';
@@ -26,11 +26,10 @@ import { KanbanColumn } from './KanbanColumn';
 import { KanbanTaskCard } from './KanbanTaskCard';
 
 interface KanbanBoardProps {
-  goalId: string;
   tasks: Task[];
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
-  onReorder: (payload: ReturnType<typeof buildReorderPayload>) => void;
+  onReorder: (payload: ReturnType<typeof buildBoardReorderPayload>) => void;
 }
 
 const collisionDetection: CollisionDetection = (args) => {
@@ -39,7 +38,7 @@ const collisionDetection: CollisionDetection = (args) => {
   return rectIntersection(args);
 };
 
-export function KanbanBoard({ goalId, tasks, onEdit, onDelete, onReorder }: KanbanBoardProps) {
+export function KanbanBoard({ tasks, onEdit, onDelete, onReorder }: KanbanBoardProps) {
   const [columns, setColumns] = useState(() => groupTasksByStatus(tasks));
   const columnsRef = useRef(columns);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -86,7 +85,7 @@ export function KanbanBoard({ goalId, tasks, onEdit, onDelete, onReorder }: Kanb
     const next = dragOverColumns(current, String(active.id), String(over.id)) ?? current;
     setColumns(next);
     columnsRef.current = next;
-    onReorder(buildReorderPayload(goalId, next));
+    onReorder(buildBoardReorderPayload(next));
   };
 
   const handleDragCancel = () => {

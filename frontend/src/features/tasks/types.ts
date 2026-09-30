@@ -8,6 +8,7 @@ export enum TaskStatus {
 export interface Task {
   id: string;
   goalId: string;
+  goalTitle?: string;
   title: string;
   description: string | null;
   status: TaskStatus;

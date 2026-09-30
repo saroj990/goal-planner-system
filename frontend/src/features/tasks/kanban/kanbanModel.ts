@@ -31,7 +31,7 @@ export function groupTasksByStatus(tasks: Task[]): Record<TaskStatus, Task[]> {
   return columns;
 }
 
-export function buildReorderPayload(goalId: string, columns: Record<TaskStatus, Task[]>) {
+export function buildBoardReorderPayload(columns: Record<TaskStatus, Task[]>) {
   const items: { id: string; status: TaskStatus; position: number }[] = [];
   let position = 100;
   for (const status of KANBAN_COLUMN_ORDER) {
@@ -40,7 +40,12 @@ export function buildReorderPayload(goalId: string, columns: Record<TaskStatus, 
       position += 100;
     }
   }
-  return { goalId, items };
+  return { items };
+}
+
+/** @deprecated Per-goal board; use buildBoardReorderPayload for the workspace board. */
+export function buildReorderPayload(goalId: string, columns: Record<TaskStatus, Task[]>) {
+  return { goalId, ...buildBoardReorderPayload(columns) };
 }
 
 export function moveTaskInColumns(
