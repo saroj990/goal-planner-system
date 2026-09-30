@@ -5,7 +5,7 @@ import { AppProviders } from './providers';
 import { HomePage } from '../pages/HomePage';
 
 describe('HomePage', () => {
-  it('renders the application title and link to goals', () => {
+  it('renders welcome copy and link to goals', () => {
     render(
       <AppProviders>
         <MemoryRouter>

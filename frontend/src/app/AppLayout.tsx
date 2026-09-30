@@ -21,6 +21,19 @@ export function AppLayout() {
           </Typography>
           <Typography
             component={RouterLink}
+            to="/"
+            sx={{
+              color: 'text.secondary',
+              textDecoration: 'none',
+              fontWeight: 600,
+              fontSize: 14,
+              '&:hover': { color: 'primary.main' },
+            }}
+          >
+            Dashboard
+          </Typography>
+          <Typography
+            component={RouterLink}
             to="/goals"
             sx={{
               color: 'text.secondary',
