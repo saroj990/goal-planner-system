@@ -3,7 +3,7 @@
 **Last updated:** 2026-10-02  
 **Current iteration:** 7 — Production hardening (in progress)  
 **Status:** in progress  
-**Current focus:** Docker production path and monitoring remain for V1 completion.
+**Current focus:** Docker production path; task comments (markdown) on goal detail tasks.
 
 **UI refresh (2026-09-30):** Sidebar navigation, calmer theme, Kanban cross-column drag (todo → in progress → done).
 
@@ -70,6 +70,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
+- **Task comments:** `TaskComment` model; `GET/POST/DELETE /tasks/:taskId/comments`; markdown UI on goal detail task list (`react-markdown`).
 - **JWT auth (end-to-end):** `AuthModule`, global `JwtAuthGuard`, `@Public()` health + auth routes; goals/tasks/dashboard/progress scoped by JWT user; Prisma `password_hash` + `PasswordResetToken`; frontend login/register/forgot/reset/profile, `AuthProvider`, protected routes, Bearer on `apiClient`.
 - **Step 13 — Progress UI:** ECharts completion chart, `/progress` route.
 - **Step 11–12 — Dashboard & progress APIs:** `GET /dashboard`, `GET /progress`.

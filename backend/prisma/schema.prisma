@@ -35,6 +35,7 @@ model User {
   updatedAt    DateTime             @updatedAt @map("updated_at")
   goals        Goal[]
   resetTokens  PasswordResetToken[]
+  taskComments TaskComment[]
 
   @@map("users")
 }
@@ -83,8 +84,24 @@ model Task {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   completedAt DateTime?  @map("completed_at")
-  goal        Goal       @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  goal        Goal          @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  comments    TaskComment[]
 
   @@index([goalId])
   @@map("tasks")
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  taskId    String   @map("task_id")
+  userId    String   @map("user_id")
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([userId])
+  @@map("task_comments")
 }
