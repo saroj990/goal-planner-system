@@ -9,6 +9,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { RequestUser } from '../auth/auth.types';
 import { ReorderBoardDto } from './dto/reorder-board.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -20,34 +22,34 @@ export class TasksController {
 
   @Post('reorder')
   @HttpCode(HttpStatus.OK)
-  reorder(@Body() dto: ReorderTasksDto) {
-    return this.tasksService.reorder(dto);
+  reorder(@CurrentUser() user: RequestUser, @Body() dto: ReorderTasksDto) {
+    return this.tasksService.reorder(user.id, dto);
   }
 
   @Post('reorder-board')
   @HttpCode(HttpStatus.OK)
-  reorderBoard(@Body() dto: ReorderBoardDto) {
-    return this.tasksService.reorderBoard(dto);
+  reorderBoard(@CurrentUser() user: RequestUser, @Body() dto: ReorderBoardDto) {
+    return this.tasksService.reorderBoard(user.id, dto);
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAllForUser();
+  findAll(@CurrentUser() user: RequestUser) {
+    return this.tasksService.findAllForUser(user.id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(id);
+  findOne(@CurrentUser() user: RequestUser, @Param('id') id: string) {
+    return this.tasksService.findOne(user.id, id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateTaskDto) {
-    return this.tasksService.update(id, dto);
+  update(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: UpdateTaskDto) {
+    return this.tasksService.update(user.id, id, dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string) {
-    await this.tasksService.remove(id);
+  async remove(@CurrentUser() user: RequestUser, @Param('id') id: string) {
+    await this.tasksService.remove(user.id, id);
   }
 }

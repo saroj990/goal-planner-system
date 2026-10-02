@@ -16,4 +16,8 @@ module.exports = {
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  // pnpm nests packages under .pnpm; allow ts-jest to transform ESM @nestjs/jwt + jsonwebtoken
+  transformIgnorePatterns: [
+    'node_modules/(?!.*(@nestjs/jwt|@nestjs/passport|passport-jwt|jsonwebtoken).*)',
+  ],
 };

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Goal, GoalStatus, GoalType, Task, TaskStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersService } from '../users/users.service';
 
 export interface DashboardResponse {
   goalsCompleted: number;
@@ -22,13 +21,9 @@ export interface DashboardResponse {
 
 @Injectable()
 export class DashboardService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async getSummary(): Promise<DashboardResponse> {
-    const userId = await this.usersService.getDevUserId();
+  async getSummary(userId: string): Promise<DashboardResponse> {
     const { start, end } = dayBounds();
 
     const goals = await this.prisma.goal.findMany({
@@ -66,10 +61,7 @@ export class DashboardService {
     const completionPercent = denominator === 0 ? 0 : Math.round((numerator / denominator) * 100);
 
     const overdueGoals = goals.filter(
-      (g) =>
-        g.status === GoalStatus.ACTIVE &&
-        g.dueDate &&
-        g.dueDate < start,
+      (g) => g.status === GoalStatus.ACTIVE && g.dueDate && g.dueDate < start,
     );
 
     const activeGoalsCount = goals.filter((g) => g.status === GoalStatus.ACTIVE).length;

@@ -1,11 +1,26 @@
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined';
 import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
-import { Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
-import { NavLink, Outlet } from 'react-router-dom';
+import {
+  Box,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { useState } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../features/auth/hooks/useAuth';
 import { useThemeMode } from './ThemeModeProvider';
 import { radius } from './theme';
 
@@ -18,6 +33,11 @@ const navItems = [
 
 export function AppLayout() {
   const { mode, toggleMode } = useThemeMode();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+
+  const displayName = user?.name?.split(' ')[0] ?? 'Account';
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: 'background.default' }}>
@@ -94,19 +114,79 @@ export function AppLayout() {
           ))}
         </Stack>
 
-        <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'}>
-          <IconButton
-            onClick={toggleMode}
-            aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        <Stack spacing={0.5} sx={{ mt: 1 }}>
+          <Tooltip title="Account">
+            <IconButton
+              onClick={(e) => setMenuAnchor(e.currentTarget)}
+              aria-label="Account menu"
+              sx={{
+                alignSelf: { xs: 'center', sm: 'flex-start' },
+                ml: { sm: 0.5 },
+                color: 'text.secondary',
+              }}
+            >
+              <AccountCircleOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+          <Typography
+            variant="caption"
+            color="text.secondary"
             sx={{
-              alignSelf: { xs: 'center', sm: 'flex-start' },
-              ml: { sm: 0.5 },
-              color: 'text.secondary',
+              display: { xs: 'none', sm: 'block' },
+              px: 1.5,
+              fontWeight: 600,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
-            {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
-          </IconButton>
-        </Tooltip>
+            {displayName}
+          </Typography>
+          <Menu
+            anchorEl={menuAnchor}
+            open={Boolean(menuAnchor)}
+            onClose={() => setMenuAnchor(null)}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          >
+            <MenuItem
+              onClick={() => {
+                setMenuAnchor(null);
+                navigate('/profile');
+              }}
+            >
+              <ListItemIcon>
+                <AccountCircleOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Profile</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setMenuAnchor(null);
+                logout();
+                navigate('/login');
+              }}
+            >
+              <ListItemIcon>
+                <LogoutOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Sign out</ListItemText>
+            </MenuItem>
+          </Menu>
+
+          <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'}>
+            <IconButton
+              onClick={toggleMode}
+              aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              sx={{
+                alignSelf: { xs: 'center', sm: 'flex-start' },
+                ml: { sm: 0.5 },
+                color: 'text.secondary',
+              }}
+            >
+              {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Box>
 
       <Box

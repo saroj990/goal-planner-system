@@ -1,20 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Goal, GoalStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersService } from '../users/users.service';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { ListGoalsQueryDto } from './dto/list-goals-query.dto';
 import { UpdateGoalDto } from './dto/update-goal.dto';
 
 @Injectable()
 export class GoalsService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateGoalDto): Promise<Goal> {
-    const userId = await this.usersService.getDevUserId();
+  async create(userId: string, dto: CreateGoalDto): Promise<Goal> {
     return this.prisma.goal.create({
       data: {
         userId,
@@ -28,8 +23,7 @@ export class GoalsService {
     });
   }
 
-  async findAll(query: ListGoalsQueryDto): Promise<Goal[]> {
-    const userId = await this.usersService.getDevUserId();
+  async findAll(userId: string, query: ListGoalsQueryDto): Promise<Goal[]> {
     const where: Prisma.GoalWhereInput = {
       userId,
       ...(query.type ? { type: query.type } : {}),
@@ -40,8 +34,7 @@ export class GoalsService {
     });
   }
 
-  async findOne(id: string): Promise<Goal> {
-    const userId = await this.usersService.getDevUserId();
+  async findOne(userId: string, id: string): Promise<Goal> {
     const goal = await this.prisma.goal.findFirst({
       where: { id, userId },
     });
@@ -51,8 +44,8 @@ export class GoalsService {
     return goal;
   }
 
-  async update(id: string, dto: UpdateGoalDto): Promise<Goal> {
-    await this.findOne(id);
+  async update(userId: string, id: string, dto: UpdateGoalDto): Promise<Goal> {
+    await this.findOne(userId, id);
 
     const data: Prisma.GoalUpdateInput = {
       ...(dto.title !== undefined ? { title: dto.title } : {}),
@@ -76,8 +69,8 @@ export class GoalsService {
     });
   }
 
-  async remove(id: string): Promise<void> {
-    await this.findOne(id);
+  async remove(userId: string, id: string): Promise<void> {
+    await this.findOne(userId, id);
     await this.prisma.goal.delete({
       where: { id },
     });

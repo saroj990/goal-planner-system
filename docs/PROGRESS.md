@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
-**Last updated:** 2026-09-30  
+**Last updated:** 2026-10-02  
 **Current iteration:** 7 — Production hardening (in progress)  
 **Status:** in progress  
-**Current focus:** JWT auth and production deploy path remain for V1 completion.
+**Current focus:** Docker production path and monitoring remain for V1 completion.
 
 **UI refresh (2026-09-30):** Sidebar navigation, calmer theme, Kanban cross-column drag (todo → in progress → done).
 
@@ -59,7 +59,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ### Iteration 7 — Production hardening
 
-- [ ] Authentication and authorization (JWT)
+- [x] Authentication and authorization (JWT register/login, forgot/reset password, profile, guarded APIs)
 - [x] Validation, errors, logging (HTTP request logging)
 - [x] Testing (Vitest + Playwright smoke)
 - [ ] Docker production path, backup, monitoring
@@ -70,16 +70,16 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
+- **JWT auth (end-to-end):** `AuthModule`, global `JwtAuthGuard`, `@Public()` health + auth routes; goals/tasks/dashboard/progress scoped by JWT user; Prisma `password_hash` + `PasswordResetToken`; frontend login/register/forgot/reset/profile, `AuthProvider`, protected routes, Bearer on `apiClient`.
 - **Step 13 — Progress UI:** ECharts completion chart, `/progress` route.
 - **Step 11–12 — Dashboard & progress APIs:** `GET /dashboard`, `GET /progress`.
-- **Step 14–16 — Hardening:** CI workflow, HTTP logging, Playwright welcome smoke test.
 
 ---
 
 ## Next up
 
-1. **JWT auth** — replace dev user scoping with login/register and guards.
-2. Optional: production Docker/Nginx path per architecture plan.
+1. Production Docker/Nginx path per architecture plan.
+2. Optional: email delivery for password reset (currently reset link logged server-side).
 
 ---
 
@@ -93,7 +93,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | `before-implementing.mdc` — follow all rules and user step approval before coding. |
 | 2026-09-30 | Prisma `cuid` IDs; goal/task enums per architecture plan; `onDelete: Cascade` goal→tasks. |
 | 2026-09-30 | API errors: `statusCode`, `error`, `message`, `path`, `timestamp` via global exception filter. |
-| 2026-09-30 | Pre-auth: single dev user `dev@goaltracker.local` (upsert) owns all goals. |
+| 2026-10-02 | Replaced dev-user scoping with JWT; register/login required for app APIs; forgot-password logs reset URL (no email in V1). |
 | 2026-09-30 | Frontend API base via `VITE_API_URL` (see `.env.example`). |
 | 2026-09-30 | New tasks get `position` in steps of 100 per goal. |
 | 2026-09-30 | Modern UI skill + shared `app/theme.ts` (Inter, indigo, soft surfaces). |
@@ -106,4 +106,4 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Completed iterations
 
-Iterations 1–6 (except calendar/history) and partial Iteration 7 (CI, logging, Playwright).
+Iterations 1–6 (except calendar/history) and partial Iteration 7 (CI, logging, Playwright, JWT auth).
