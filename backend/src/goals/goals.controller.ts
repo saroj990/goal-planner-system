@@ -10,6 +10,8 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { RequestUser } from '../auth/auth.types';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { ListGoalsQueryDto } from './dto/list-goals-query.dto';
 import { UpdateGoalDto } from './dto/update-goal.dto';
@@ -20,28 +22,28 @@ export class GoalsController {
   constructor(private readonly goalsService: GoalsService) {}
 
   @Post()
-  create(@Body() dto: CreateGoalDto) {
-    return this.goalsService.create(dto);
+  create(@CurrentUser() user: RequestUser, @Body() dto: CreateGoalDto) {
+    return this.goalsService.create(user.id, dto);
   }
 
   @Get()
-  findAll(@Query() query: ListGoalsQueryDto) {
-    return this.goalsService.findAll(query);
+  findAll(@CurrentUser() user: RequestUser, @Query() query: ListGoalsQueryDto) {
+    return this.goalsService.findAll(user.id, query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.goalsService.findOne(id);
+  findOne(@CurrentUser() user: RequestUser, @Param('id') id: string) {
+    return this.goalsService.findOne(user.id, id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateGoalDto) {
-    return this.goalsService.update(id, dto);
+  update(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: UpdateGoalDto) {
+    return this.goalsService.update(user.id, id, dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string) {
-    await this.goalsService.remove(id);
+  async remove(@CurrentUser() user: RequestUser, @Param('id') id: string) {
+    await this.goalsService.remove(user.id, id);
   }
 }

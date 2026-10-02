@@ -5,6 +5,7 @@ import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
+import { AuthProvider } from '../features/auth/AuthProvider';
 import { ThemeModeProvider } from './ThemeModeProvider';
 
 export function AppProviders({ children }: PropsWithChildren) {
@@ -13,8 +14,10 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeModeProvider>
-        <CssBaseline />
-        {children}
+        <AuthProvider>
+          <CssBaseline />
+          {children}
+        </AuthProvider>
       </ThemeModeProvider>
     </QueryClientProvider>
   );

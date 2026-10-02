@@ -57,7 +57,7 @@ pnpm --filter @goal-tracker/frontend dev
 
 ### Goals API (Iteration 2 — backend)
 
-Until auth ships, goals are scoped to an auto-created dev user (`dev@goaltracker.local`).
+Protected routes require `Authorization: Bearer <accessToken>` from `POST /api/v1/auth/login` or `POST /api/v1/auth/register`. Set `JWT_SECRET` in `.env` (see `.env.example`).
 
 | Method | Path | Notes |
 |--------|------|--------|

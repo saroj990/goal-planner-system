@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GoalType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersService } from '../users/users.service';
 
 export interface ProgressDayPoint {
   date: string;
@@ -18,14 +17,10 @@ const MAX_DAYS = 90;
 
 @Injectable()
 export class ProgressService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async getHistory(days = DEFAULT_DAYS): Promise<ProgressResponse> {
+  async getHistory(userId: string, days = DEFAULT_DAYS): Promise<ProgressResponse> {
     const span = Math.min(Math.max(days, 1), MAX_DAYS);
-    const userId = await this.usersService.getDevUserId();
     const { start, keys } = dayRange(span);
 
     const goals = await this.prisma.goal.findMany({
