@@ -9,9 +9,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
 import type { Task } from '../types';
 import { TaskStatus } from '../types';
 import { TASK_STATUS_LABEL } from '../taskStatusStyle';
+import { TaskCommentsPanel } from './TaskCommentsPanel';
 import { TaskStatusChip } from './TaskStatusChip';
 
 interface TaskListProps {
@@ -22,6 +24,7 @@ interface TaskListProps {
 }
 
 export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListProps) {
+  const [commentsOpenFor, setCommentsOpenFor] = useState<string | null>(null);
   if (tasks.length === 0) {
     return (
       <Paper
@@ -50,7 +53,7 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
           sx={{
             p: 2,
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             gap: 2,
             flexWrap: 'wrap',
           }}
@@ -62,6 +65,13 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
                 {task.description}
               </Typography>
             )}
+            <TaskCommentsPanel
+              taskId={task.id}
+              open={commentsOpenFor === task.id}
+              onToggle={() =>
+                setCommentsOpenFor((current) => (current === task.id ? null : task.id))
+              }
+            />
           </Box>
 
           <Select

@@ -20,6 +20,20 @@ export interface Task {
   completedAt: string | null;
 }
 
+export interface TaskCommentAuthor {
+  id: string;
+  name: string;
+}
+
+export interface TaskComment {
+  id: string;
+  taskId: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  author: TaskCommentAuthor;
+}
+
 export interface CreateTaskInput {
   title: string;
   description?: string;
@@ -33,4 +47,8 @@ export interface UpdateTaskInput {
   status?: TaskStatus;
   dueDate?: string;
   priority?: number;
+}
+
+export interface CreateTaskCommentInput {
+  body: string;
 }
