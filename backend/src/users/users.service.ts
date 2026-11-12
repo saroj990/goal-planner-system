@@ -34,6 +34,13 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
+  async listAssignable(): Promise<Array<{ id: string; name: string; email: string }>> {
+    return this.prisma.user.findMany({
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, email: true },
+    });
+  }
+
   async findById(id: string): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {

@@ -5,41 +5,53 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { ReorderBoardDto } from './dto/reorder-board.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskResponse, toTaskResponse } from './task.types';
 
 const POSITION_STEP = 100;
+
+const taskInclude = {
+  project: { select: { title: true } },
+  assignee: { select: { id: true, name: true, email: true } },
+} satisfies Prisma.TaskInclude;
 
 @Injectable()
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createForProject(userId: string, projectId: string, dto: CreateTaskDto): Promise<Task> {
+  async createForProject(userId: string, projectId: string, dto: CreateTaskDto): Promise<TaskResponse> {
     await this.assertProjectOwned(userId, projectId);
+    const assigneeId =
+      dto.assigneeId === null
+        ? null
+        : await this.resolveAssigneeId(dto.assigneeId ?? userId);
     const position = await this.nextPosition(projectId);
 
-    return this.prisma.task.create({
+    const task = await this.prisma.task.create({
       data: {
         projectId,
+        assigneeId,
         title: dto.title,
         description: dto.description,
         priority: dto.priority,
         dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
         position,
       },
+      include: taskInclude,
     });
+    return toTaskResponse(task);
   }
 
-  async findByProject(userId: string, projectId: string): Promise<Task[]> {
+  async findByProject(userId: string, projectId: string): Promise<TaskResponse[]> {
     await this.assertProjectOwned(userId, projectId);
-    return this.prisma.task.findMany({
+    const tasks = await this.prisma.task.findMany({
       where: { projectId },
       orderBy: { position: 'asc' },
+      include: taskInclude,
     });
+    return tasks.map(toTaskResponse);
   }
 
-  async findAllForUser(
-    userId: string,
-    projectId?: string,
-  ): Promise<Array<Task & { projectTitle: string }>> {
+  async findAllForUser(userId: string, projectId?: string): Promise<TaskResponse[]> {
     const tasks = await this.prisma.task.findMany({
       where: {
         project: {
@@ -48,20 +60,21 @@ export class TasksService {
         },
       },
       orderBy: [{ position: 'asc' }, { updatedAt: 'asc' }],
-      include: { project: { select: { title: true } } },
+      include: taskInclude,
     });
-
-    return tasks.map(({ project, ...task }) => ({
-      ...task,
-      projectTitle: project.title,
-    }));
+    return tasks.map(toTaskResponse);
   }
 
-  async findOne(userId: string, taskId: string): Promise<Task> {
-    return this.assertTaskOwned(userId, taskId);
+  async findOne(userId: string, taskId: string): Promise<TaskResponse> {
+    const task = await this.assertTaskOwned(userId, taskId);
+    const full = await this.prisma.task.findUniqueOrThrow({
+      where: { id: task.id },
+      include: taskInclude,
+    });
+    return toTaskResponse(full);
   }
 
-  async update(userId: string, taskId: string, dto: UpdateTaskDto): Promise<Task> {
+  async update(userId: string, taskId: string, dto: UpdateTaskDto): Promise<TaskResponse> {
     await this.assertTaskOwned(userId, taskId);
 
     const data: Prisma.TaskUpdateInput = {
@@ -72,16 +85,27 @@ export class TasksService {
       ...(dto.dueDate !== undefined ? { dueDate: new Date(dto.dueDate) } : {}),
     };
 
+    if (dto.assigneeId !== undefined) {
+      if (dto.assigneeId === null) {
+        data.assignee = { disconnect: true };
+      } else {
+        const assigneeId = await this.resolveAssigneeId(dto.assigneeId);
+        data.assignee = { connect: { id: assigneeId } };
+      }
+    }
+
     if (dto.status === TaskStatus.DONE) {
       data.completedAt = new Date();
     } else if (dto.status !== undefined) {
       data.completedAt = null;
     }
 
-    return this.prisma.task.update({
+    const task = await this.prisma.task.update({
       where: { id: taskId },
       data,
+      include: taskInclude,
     });
+    return toTaskResponse(task);
   }
 
   async remove(userId: string, taskId: string): Promise<void> {
@@ -89,7 +113,7 @@ export class TasksService {
     await this.prisma.task.delete({ where: { id: taskId } });
   }
 
-  async reorder(userId: string, dto: ReorderTasksDto): Promise<Task[]> {
+  async reorder(userId: string, dto: ReorderTasksDto): Promise<TaskResponse[]> {
     await this.assertProjectOwned(userId, dto.projectId);
     const taskIds = dto.items.map((item) => item.id);
 
@@ -123,7 +147,7 @@ export class TasksService {
     return this.findByProject(userId, dto.projectId);
   }
 
-  async reorderBoard(userId: string, dto: ReorderBoardDto): Promise<Array<Task & { projectTitle: string }>> {
+  async reorderBoard(userId: string, dto: ReorderBoardDto): Promise<TaskResponse[]> {
     const taskIds = dto.items.map((item) => item.id);
 
     const existing = await this.prisma.task.findMany({
@@ -154,6 +178,14 @@ export class TasksService {
     );
 
     return this.findAllForUser(userId);
+  }
+
+  private async resolveAssigneeId(assigneeId: string): Promise<string> {
+    const user = await this.prisma.user.findUnique({ where: { id: assigneeId } });
+    if (!user) {
+      throw new BadRequestException('Assignee user not found');
+    }
+    return user.id;
   }
 
   private async nextPosition(projectId: string): Promise<number> {

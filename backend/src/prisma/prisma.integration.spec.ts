@@ -1,4 +1,4 @@
-import { PrismaClient, ProjectStatus, TaskStatus } from '@prisma/client';
+import { PrismaClient, ProjectStatus, TaskPriority, TaskStatus } from '@prisma/client';
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -41,6 +41,7 @@ describeIfDb('Prisma schema (integration)', () => {
         projectId: project.id,
         title: 'Read docs',
         status: TaskStatus.TODO,
+        priority: TaskPriority.MEDIUM,
         position: 100,
       },
     });

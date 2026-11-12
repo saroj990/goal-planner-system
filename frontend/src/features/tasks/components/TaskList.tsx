@@ -13,7 +13,9 @@ import { useState } from 'react';
 import type { Task } from '../types';
 import { TaskStatus } from '../types';
 import { TASK_STATUS_LABEL } from '../taskStatusStyle';
+import { TaskAssigneeChip } from './TaskAssigneeChip';
 import { TaskCommentsPanel } from './TaskCommentsPanel';
+import { TaskPriorityChip } from './TaskPriorityChip';
 import { TaskStatusChip } from './TaskStatusChip';
 
 interface TaskListProps {
@@ -59,7 +61,13 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
           }}
         >
           <Box sx={{ flex: 1, minWidth: 200 }}>
-            <Typography fontWeight={600}>{task.title}</Typography>
+            <Typography fontWeight={600} sx={{ lineHeight: 1.35 }}>
+              {task.title}
+            </Typography>
+            <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+              <TaskPriorityChip priority={task.priority} />
+              <TaskAssigneeChip assignee={task.assignee} />
+            </Stack>
             {task.description && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                 {task.description}

@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-12  
 **Current iteration:** 7 — Production hardening (in progress)  
 **Status:** in progress  
-**Current focus:** Project-centric domain (projects → tasks); dashboard project filter.
+**Current focus:** Task assignees and priority enum; project-centric dashboard.
 
 **UI refresh (2026-09-30):** Sidebar navigation, calmer theme, Kanban cross-column drag (todo → in progress → done).
 
@@ -70,6 +70,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
+- **Task assignee & priority:** `TaskPriority` enum (`LOW`–`URGENT`), optional `assigneeId` + `GET /users/assignable`; priority chips, assignee avatars, polished task dialog (picker + autocomplete).
 - **Project-centric model:** Goals renamed/migrated to `projects` (no daily/weekly/monthly type); tasks use `projectId`; `/api/v1/projects`; dashboard `?projectId=` filter; UI `/projects`, redirects from `/goals`.
 - **Task comments:** `TaskComment` model; `GET/POST/DELETE /tasks/:taskId/comments`; markdown UI on goal detail task list (`react-markdown`).
 - **JWT auth (end-to-end):** `AuthModule`, global `JwtAuthGuard`, `@Public()` health + auth routes; goals/tasks/dashboard/progress scoped by JWT user; Prisma `password_hash` + `PasswordResetToken`; frontend login/register/forgot/reset/profile, `AuthProvider`, protected routes, Bearer on `apiClient`.

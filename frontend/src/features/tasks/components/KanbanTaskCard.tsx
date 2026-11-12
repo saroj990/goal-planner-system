@@ -6,7 +6,9 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Link as RouterLink } from 'react-router-dom';
 import type { Task } from '../types';
+import { TaskAssigneeChip } from './TaskAssigneeChip';
 import { TaskDueDateBadge } from './TaskDueDateBadge';
+import { TaskPriorityChip } from './TaskPriorityChip';
 
 interface KanbanTaskCardProps {
   task: Task;
@@ -42,8 +44,14 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
           boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
         }}
       >
-        <Typography variant="body2" fontWeight={600}>{task.title}</Typography>
-        <TaskDueDateBadge dueDate={task.dueDate} />
+        <Typography variant="body2" fontWeight={600}>
+          {task.title}
+        </Typography>
+        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mt: 0.75 }}>
+          <TaskPriorityChip priority={task.priority} />
+          <TaskAssigneeChip assignee={task.assignee} />
+          <TaskDueDateBadge dueDate={task.dueDate} />
+        </Stack>
       </Paper>
     );
   }
@@ -85,9 +93,18 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
               {task.projectTitle}
             </Typography>
           )}
-          <Box onPointerDown={(e) => e.stopPropagation()}>
+          <Stack
+            direction="row"
+            spacing={0.5}
+            flexWrap="wrap"
+            useFlexGap
+            sx={{ mt: 0.75 }}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <TaskPriorityChip priority={task.priority} />
+            <TaskAssigneeChip assignee={task.assignee} />
             <TaskDueDateBadge dueDate={task.dueDate} />
-          </Box>
+          </Stack>
         </Box>
         <Stack direction="row" spacing={0} onPointerDown={(e) => e.stopPropagation()}>
           <IconButton size="small" aria-label="Edit task" onClick={() => onEdit(task)}>

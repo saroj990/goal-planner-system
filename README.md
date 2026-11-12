@@ -71,7 +71,8 @@ Protected routes require `Authorization: Bearer <accessToken>` from `POST /api/v
 
 | Method | Path | Notes |
 |--------|------|--------|
-| `POST` | `/api/v1/projects/:projectId/tasks` | Body: `title`, optional `description`, `dueDate`, `priority`; assigns `position` |
+| `POST` | `/api/v1/projects/:projectId/tasks` | Body: `title`, optional `description`, `dueDate`, `priority` (`LOW`–`URGENT`), `assigneeId` (defaults to you); assigns `position` |
+| `GET` | `/api/v1/users/assignable` | Users for task assignment picker (`id`, `name`, `email`) |
 | `GET` | `/api/v1/projects/:projectId/tasks` | Ordered by `position` |
 | `GET` | `/api/v1/tasks/:id` | |
 | `PATCH` | `/api/v1/tasks/:id` | `status`: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` |

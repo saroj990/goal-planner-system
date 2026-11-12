@@ -5,14 +5,29 @@ export enum TaskStatus {
   DONE = 'DONE',
 }
 
+export enum TaskPriority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT',
+}
+
+export interface TaskAssigneeSummary {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export interface Task {
   id: string;
   projectId: string;
   projectTitle?: string;
+  assigneeId: string | null;
+  assignee: TaskAssigneeSummary | null;
   title: string;
   description: string | null;
   status: TaskStatus;
-  priority: number | null;
+  priority: TaskPriority;
   position: number;
   dueDate: string | null;
   createdAt: string;
@@ -38,7 +53,8 @@ export interface CreateTaskInput {
   title: string;
   description?: string;
   dueDate?: string;
-  priority?: number;
+  priority?: TaskPriority;
+  assigneeId?: string | null;
 }
 
 export interface UpdateTaskInput {
@@ -46,7 +62,8 @@ export interface UpdateTaskInput {
   description?: string;
   status?: TaskStatus;
   dueDate?: string;
-  priority?: number;
+  priority?: TaskPriority;
+  assigneeId?: string | null;
 }
 
 export interface CreateTaskCommentInput {

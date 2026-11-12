@@ -10,6 +10,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TasksModule } from './tasks/tasks.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TasksModule } from './tasks/tasks.module';
     ProgressModule,
     ProjectsModule,
     TasksModule,
+    UsersModule,
   ],
   providers: [
     {

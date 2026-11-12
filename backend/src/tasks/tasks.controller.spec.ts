@@ -54,13 +54,15 @@ describeIfDb('Tasks API (integration)', () => {
     const response = await server()
       .post(`/api/v1/projects/${projectId}/tasks`)
       .set(authHeader(accessToken))
-      .send({ title: 'Read docs' })
+      .send({ title: 'Read docs', priority: 'HIGH' })
       .expect(201);
 
     expect(response.body).toMatchObject({
       title: 'Read docs',
       projectId,
       status: TaskStatus.TODO,
+      priority: 'HIGH',
+      assignee: expect.objectContaining({ id: expect.any(String) }),
     });
     expect(response.body.position).toBeGreaterThan(0);
     createdTaskIds.push(response.body.id);
