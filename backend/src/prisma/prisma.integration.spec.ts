@@ -1,4 +1,4 @@
-import { PrismaClient, GoalStatus, GoalType, TaskStatus } from '@prisma/client';
+import { PrismaClient, ProjectStatus, TaskStatus } from '@prisma/client';
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -18,7 +18,7 @@ describeIfDb('Prisma schema (integration)', () => {
     await prisma.$disconnect();
   });
 
-  it('creates user → goal → task and enforces enums', async () => {
+  it('creates user → project → task and enforces enums', async () => {
     const user = await prisma.user.create({
       data: {
         name: 'Test User',
@@ -26,12 +26,11 @@ describeIfDb('Prisma schema (integration)', () => {
       },
     });
 
-    const goal = await prisma.goal.create({
+    const project = await prisma.project.create({
       data: {
         userId: user.id,
         title: 'Learn Kafka',
-        type: GoalType.MONTHLY,
-        status: GoalStatus.ACTIVE,
+        status: ProjectStatus.ACTIVE,
         startDate: new Date('2026-09-01'),
         dueDate: new Date('2026-09-30'),
       },
@@ -39,18 +38,18 @@ describeIfDb('Prisma schema (integration)', () => {
 
     const task = await prisma.task.create({
       data: {
-        goalId: goal.id,
+        projectId: project.id,
         title: 'Read docs',
         status: TaskStatus.TODO,
         position: 100,
       },
     });
 
-    expect(task.goalId).toBe(goal.id);
-    expect(goal.userId).toBe(user.id);
+    expect(task.projectId).toBe(project.id);
+    expect(project.userId).toBe(user.id);
 
     await prisma.task.delete({ where: { id: task.id } });
-    await prisma.goal.delete({ where: { id: goal.id } });
+    await prisma.project.delete({ where: { id: project.id } });
     await prisma.user.delete({ where: { id: user.id } });
   });
 });

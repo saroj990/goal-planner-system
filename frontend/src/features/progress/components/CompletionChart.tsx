@@ -14,33 +14,21 @@ export function CompletionChart({ days }: { days: ProgressDayPoint[] }) {
     const labels = days.map((d) => d.date.slice(5));
 
     chart.setOption({
-      color: ['#60a5fa', '#38bdf8', '#a78bfa', '#4ade80'],
+      color: ['#60a5fa', '#4ade80'],
       tooltip: { trigger: 'axis' },
-      legend: { bottom: 0, data: ['Daily goals', 'Weekly goals', 'Monthly goals', 'Tasks'] },
+      legend: { bottom: 0, data: ['Projects completed', 'Tasks completed'] },
       grid: { left: 40, right: 16, top: 24, bottom: 48 },
       xAxis: { type: 'category', data: labels, boundaryGap: false },
       yAxis: { type: 'value', minInterval: 1 },
       series: [
         {
-          name: 'Daily goals',
+          name: 'Projects completed',
           type: 'line',
           smooth: true,
-          data: days.map((d) => d.goals.daily),
+          data: days.map((d) => d.projects),
         },
         {
-          name: 'Weekly goals',
-          type: 'line',
-          smooth: true,
-          data: days.map((d) => d.goals.weekly),
-        },
-        {
-          name: 'Monthly goals',
-          type: 'line',
-          smooth: true,
-          data: days.map((d) => d.goals.monthly),
-        },
-        {
-          name: 'Tasks',
+          name: 'Tasks completed',
           type: 'bar',
           data: days.map((d) => d.tasks),
           barMaxWidth: 12,

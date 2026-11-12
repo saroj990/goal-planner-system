@@ -12,10 +12,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { useGoalsList } from '../features/goals/hooks/useGoals';
-import { GoalStatus } from '../features/goals/types';
+import { useProjectsList } from '../features/projects/hooks/useProjects';
+import { ProjectStatus } from '../features/projects/types';
 import { KanbanBoard } from '../features/tasks/components/KanbanBoard';
 import { TaskFormDialog } from '../features/tasks/components/TaskFormDialog';
 import { useBoardTaskMutations } from '../features/tasks/hooks/useBoardTaskMutations';
@@ -23,23 +22,25 @@ import { useAllTasks } from '../features/tasks/hooks/useTasks';
 import type { Task } from '../features/tasks/types';
 
 export function BoardPage() {
-  const { data: tasks, isLoading, isError, error } = useAllTasks();
-  const { data: goals } = useGoalsList();
+  const [boardProjectFilter, setBoardProjectFilter] = useState('');
+  const filterId = boardProjectFilter || undefined;
+  const { data: tasks, isLoading, isError, error } = useAllTasks(filterId);
+  const { data: projects } = useProjectsList();
   const { create, update, remove, reorder } = useBoardTaskMutations();
 
-  const activeGoals = useMemo(
-    () => (goals ?? []).filter((g) => g.status === GoalStatus.ACTIVE),
-    [goals],
+  const activeProjects = useMemo(
+    () => (projects ?? []).filter((p) => p.status === ProjectStatus.ACTIVE),
+    [projects],
   );
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-  const [createGoalId, setCreateGoalId] = useState('');
+  const [createProjectId, setCreateProjectId] = useState('');
 
   const openCreate = () => {
     setEditing(null);
-    setCreateGoalId(activeGoals[0]?.id ?? '');
+    setCreateProjectId(activeProjects[0]?.id ?? '');
     setDialogOpen(true);
   };
 
@@ -57,19 +58,39 @@ export function BoardPage() {
         spacing={2}
       >
         <Box>
-          <Typography variant="h4" component="h1">Board</Typography>
+          <Typography variant="h4" component="h1">
+            Board
+          </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            One workspace for every task across your goals. Add tasks from any active goal.
+            Kanban for tasks across projects. Filter by project or see everything.
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={openCreate}
-          disabled={activeGoals.length === 0}
-        >
-          Add task
-        </Button>
+        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel id="board-filter-label">Show</InputLabel>
+            <Select
+              labelId="board-filter-label"
+              label="Show"
+              value={boardProjectFilter}
+              onChange={(e) => setBoardProjectFilter(e.target.value)}
+            >
+              <MenuItem value="">All projects</MenuItem>
+              {(projects ?? []).map((p) => (
+                <MenuItem key={p.id} value={p.id}>
+                  {p.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={openCreate}
+            disabled={activeProjects.length === 0}
+          >
+            Add task
+          </Button>
+        </Stack>
       </Stack>
 
       {isLoading && (
@@ -84,10 +105,8 @@ export function BoardPage() {
         </Alert>
       )}
 
-      {!isLoading && !isError && activeGoals.length === 0 && (
-        <Alert severity="info">
-          Create an active goal before adding tasks to the board.
-        </Alert>
+      {!isLoading && !isError && activeProjects.length === 0 && (
+        <Alert severity="info">Create an active project before adding tasks to the board.</Alert>
       )}
 
       {!isLoading && !isError && (
@@ -107,22 +126,24 @@ export function BoardPage() {
           if (editing) {
             await update.mutateAsync({ taskId: editing.id, input });
           } else {
-            if (!createGoalId) return;
-            await create.mutateAsync({ goalId: createGoalId, input });
+            if (!createProjectId) return;
+            await create.mutateAsync({ projectId: createProjectId, input });
           }
         }}
         extraFields={
           !editing ? (
             <FormControl fullWidth required>
-              <InputLabel id="board-goal-label">Goal</InputLabel>
+              <InputLabel id="board-project-label">Project</InputLabel>
               <Select
-                labelId="board-goal-label"
-                label="Goal"
-                value={createGoalId}
-                onChange={(e) => setCreateGoalId(e.target.value)}
+                labelId="board-project-label"
+                label="Project"
+                value={createProjectId}
+                onChange={(e) => setCreateProjectId(e.target.value)}
               >
-                {activeGoals.map((goal) => (
-                  <MenuItem key={goal.id} value={goal.id}>{goal.title}</MenuItem>
+                {activeProjects.map((project) => (
+                  <MenuItem key={project.id} value={project.id}>
+                    {project.title}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -133,9 +154,7 @@ export function BoardPage() {
       <ConfirmDialog
         open={taskToDelete !== null}
         title="Delete task?"
-        description={
-          taskToDelete ? `"${taskToDelete.title}" will be permanently removed.` : ''
-        }
+        description={taskToDelete ? `"${taskToDelete.title}" will be permanently removed.` : ''}
         confirmLabel="Delete"
         destructive
         loading={remove.isPending}

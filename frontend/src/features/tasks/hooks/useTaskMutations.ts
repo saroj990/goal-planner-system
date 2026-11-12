@@ -4,15 +4,15 @@ import type { ReorderTasksInput } from '../api/tasksApi';
 import type { CreateTaskInput, Task, UpdateTaskInput } from '../types';
 import { tasksQueryKeys } from './useTasks';
 
-export function useTaskMutations(goalId: string) {
+export function useTaskMutations(projectId: string) {
   const queryClient = useQueryClient();
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: tasksQueryKeys.byGoal(goalId) });
-    queryClient.invalidateQueries({ queryKey: tasksQueryKeys.all });
+    queryClient.invalidateQueries({ queryKey: tasksQueryKeys.byProject(projectId) });
+    queryClient.invalidateQueries({ queryKey: ['tasks', 'all'] });
   };
 
   const create = useMutation({
-    mutationFn: (input: CreateTaskInput) => createTask(goalId, input),
+    mutationFn: (input: CreateTaskInput) => createTask(projectId, input),
     onSuccess: invalidate,
   });
 
@@ -30,8 +30,8 @@ export function useTaskMutations(goalId: string) {
   const reorder = useMutation({
     mutationFn: (input: ReorderTasksInput) => reorderTasks(input),
     onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: tasksQueryKeys.byGoal(goalId) });
-      const previous = queryClient.getQueryData<Task[]>(tasksQueryKeys.byGoal(goalId));
+      await queryClient.cancelQueries({ queryKey: tasksQueryKeys.byProject(projectId) });
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKeys.byProject(projectId));
       if (previous) {
         const byId = new Map(previous.map((t) => [t.id, t]));
         const optimistic = input.items
@@ -45,13 +45,13 @@ export function useTaskMutations(goalId: string) {
             };
           })
           .filter(Boolean) as Task[];
-        queryClient.setQueryData(tasksQueryKeys.byGoal(goalId), optimistic);
+        queryClient.setQueryData(tasksQueryKeys.byProject(projectId), optimistic);
       }
       return { previous };
     },
     onError: (_error, _input, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(tasksQueryKeys.byGoal(goalId), context.previous);
+        queryClient.setQueryData(tasksQueryKeys.byProject(projectId), context.previous);
       }
     },
     onSettled: invalidate,

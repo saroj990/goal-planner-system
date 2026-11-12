@@ -51,7 +51,7 @@ export class TaskCommentsService {
 
   private async assertTaskOwned(userId: string, taskId: string): Promise<void> {
     const task = await this.prisma.task.findFirst({
-      where: { id: taskId, goal: { userId } },
+      where: { id: taskId, project: { userId } },
     });
     if (!task) {
       throw new NotFoundException(`Task ${taskId} not found`);

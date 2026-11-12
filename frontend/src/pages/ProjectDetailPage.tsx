@@ -14,18 +14,18 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-import { GoalFormDialog } from '../features/goals/components/GoalFormDialog';
-import { useGoalMutations } from '../features/goals/hooks/useGoalMutations';
-import { useGoal } from '../features/goals/hooks/useGoals';
-import type { CreateGoalInput } from '../features/goals/types';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { GoalTasksSection } from '../features/tasks/components/GoalTasksSection';
+import { ProjectFormDialog } from '../features/projects/components/ProjectFormDialog';
+import { useProjectMutations } from '../features/projects/hooks/useProjectMutations';
+import { useProject } from '../features/projects/hooks/useProjects';
+import type { UpdateProjectInput } from '../features/projects/types';
+import { ProjectTasksSection } from '../features/tasks/components/ProjectTasksSection';
 
-export function GoalDetailPage() {
+export function ProjectDetailPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
-  const { data: goal, isLoading, isError, error } = useGoal(id);
-  const { update, remove } = useGoalMutations(goal?.type);
+  const { data: project, isLoading, isError, error } = useProject(id);
+  const { update, remove } = useProjectMutations();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -37,10 +37,10 @@ export function GoalDetailPage() {
     );
   }
 
-  if (isError || !goal) {
+  if (isError || !project) {
     return (
       <Alert severity="error">
-        {error instanceof Error ? error.message : 'Goal not found'}
+        {error instanceof Error ? error.message : 'Project not found'}
       </Alert>
     );
   }
@@ -49,70 +49,66 @@ export function GoalDetailPage() {
     <Box>
       <Button
         component={RouterLink}
-        to="/goals"
+        to="/projects"
         startIcon={<ArrowBackIcon />}
         color="inherit"
         sx={{ mb: 2, color: 'text.secondary' }}
       >
-        Goals
+        Projects
       </Button>
 
       <Paper sx={{ p: 3, mb: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={2}>
           <Box>
             <Typography component="h1" variant="h4" gutterBottom>
-              {goal.title}
+              {project.title}
             </Typography>
-            <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap" useFlexGap>
-              <Chip label={goal.type} size="small" color="primary" variant="outlined" />
-              <Chip label={goal.status} size="small" variant="outlined" />
-            </Stack>
-            {goal.description && (
+            <Chip label={project.status} size="small" variant="outlined" sx={{ mb: 2 }} />
+            {project.description && (
               <Typography color="text.secondary" sx={{ maxWidth: 560 }}>
-                {goal.description}
+                {project.description}
               </Typography>
             )}
-            {goal.dueDate && (
+            {project.dueDate && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
-                Due {goal.dueDate.slice(0, 10)}
+                Due {project.dueDate.slice(0, 10)}
               </Typography>
             )}
           </Box>
           <Stack direction="row" spacing={0.5}>
-            <IconButton aria-label="Edit goal" onClick={() => setEditOpen(true)}>
+            <IconButton aria-label="Edit project" onClick={() => setEditOpen(true)}>
               <EditOutlinedIcon />
             </IconButton>
-            <IconButton aria-label="Delete goal" color="error" onClick={() => setDeleteOpen(true)}>
+            <IconButton aria-label="Delete project" color="error" onClick={() => setDeleteOpen(true)}>
               <DeleteOutlineIcon />
             </IconButton>
           </Stack>
         </Stack>
       </Paper>
 
-      <GoalTasksSection goalId={goal.id} />
+      <ProjectTasksSection projectId={project.id} />
 
-      <GoalFormDialog
+      <ProjectFormDialog
         open={editOpen}
-        initial={goal}
-        defaultType={goal.type}
+        initial={project}
         onClose={() => setEditOpen(false)}
-        onSubmit={async (input: CreateGoalInput) => {
-          await update.mutateAsync({ id: goal.id, input });
+        onSubmit={async (input) => {
+          await update.mutateAsync({ id: project.id, input: input as UpdateProjectInput });
         }}
       />
 
       <ConfirmDialog
         open={deleteOpen}
-        title="Delete goal?"
-        description={`"${goal.title}" and all of its tasks will be permanently removed.`}
+        title="Delete project?"
+        description={`"${project.title}" and all of its tasks will be permanently removed.`}
         confirmLabel="Delete"
         destructive
         loading={remove.isPending}
         onCancel={() => setDeleteOpen(false)}
         onConfirm={async () => {
-          await remove.mutateAsync(goal.id);
+          await remove.mutateAsync(project.id);
           setDeleteOpen(false);
-          navigate('/goals');
+          navigate('/projects');
         }}
       />
     </Box>

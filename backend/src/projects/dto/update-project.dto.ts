@@ -1,10 +1,9 @@
-import { GoalStatus, GoalType } from '@prisma/client';
-import { IsDateString, IsEnum, IsInt, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { ProjectStatus } from '@prisma/client';
+import { IsDateString, IsEnum, IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class UpdateGoalDto {
+export class UpdateProjectDto {
   @IsOptional()
   @IsString()
-  @MinLength(1)
   @MaxLength(200)
   title?: string;
 
@@ -14,12 +13,8 @@ export class UpdateGoalDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(GoalType)
-  type?: GoalType;
-
-  @IsOptional()
-  @IsEnum(GoalStatus)
-  status?: GoalStatus;
+  @IsEnum(ProjectStatus)
+  status?: ProjectStatus;
 
   @IsOptional()
   @IsDateString()

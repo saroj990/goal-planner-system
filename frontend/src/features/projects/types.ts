@@ -1,44 +1,35 @@
-export enum GoalType {
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY',
-}
-
-export enum GoalStatus {
+export enum ProjectStatus {
   ACTIVE = 'ACTIVE',
   COMPLETED = 'COMPLETED',
   ARCHIVED = 'ARCHIVED',
 }
 
-export interface Goal {
+export interface Project {
   id: string;
   userId: string;
   title: string;
   description: string | null;
-  type: GoalType;
   startDate: string | null;
   dueDate: string | null;
-  status: GoalStatus;
+  status: ProjectStatus;
   priority: number | null;
   createdAt: string;
   updatedAt: string;
   completedAt: string | null;
 }
 
-export interface CreateGoalInput {
+export interface CreateProjectInput {
   title: string;
-  type: GoalType;
   description?: string;
   startDate?: string;
   dueDate?: string;
   priority?: number;
 }
 
-export interface UpdateGoalInput {
+export interface UpdateProjectInput {
   title?: string;
   description?: string;
-  type?: GoalType;
-  status?: GoalStatus;
+  status?: ProjectStatus;
   startDate?: string;
   dueDate?: string;
   priority?: number;

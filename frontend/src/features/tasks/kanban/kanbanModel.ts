@@ -44,8 +44,8 @@ export function buildBoardReorderPayload(columns: Record<TaskStatus, Task[]>) {
 }
 
 /** @deprecated Per-goal board; use buildBoardReorderPayload for the workspace board. */
-export function buildReorderPayload(goalId: string, columns: Record<TaskStatus, Task[]>) {
-  return { goalId, ...buildBoardReorderPayload(columns) };
+export function buildReorderPayload(projectId: string, columns: Record<TaskStatus, Task[]>) {
+  return { projectId, ...buildBoardReorderPayload(columns) };
 }
 
 export function moveTaskInColumns(

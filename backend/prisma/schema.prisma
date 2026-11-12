@@ -7,13 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum GoalType {
-  DAILY
-  WEEKLY
-  MONTHLY
-}
-
-enum GoalStatus {
+enum ProjectStatus {
   ACTIVE
   COMPLETED
   ARCHIVED
@@ -33,7 +27,7 @@ model User {
   passwordHash String?              @map("password_hash")
   createdAt    DateTime             @default(now()) @map("created_at")
   updatedAt    DateTime             @updatedAt @map("updated_at")
-  goals        Goal[]
+  projects     Project[]
   resetTokens  PasswordResetToken[]
   taskComments TaskComment[]
 
@@ -52,29 +46,28 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
 }
 
-model Goal {
-  id          String     @id @default(cuid())
-  userId      String     @map("user_id")
+model Project {
+  id          String        @id @default(cuid())
+  userId      String        @map("user_id")
   title       String
   description String?
-  type        GoalType
-  startDate   DateTime?  @map("start_date") @db.Date
-  dueDate     DateTime?  @map("due_date") @db.Date
-  status      GoalStatus @default(ACTIVE)
+  startDate   DateTime?     @map("start_date") @db.Date
+  dueDate     DateTime?     @map("due_date") @db.Date
+  status      ProjectStatus @default(ACTIVE)
   priority    Int?
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  completedAt DateTime?  @map("completed_at")
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  completedAt DateTime?     @map("completed_at")
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks       Task[]
 
   @@index([userId])
-  @@map("goals")
+  @@map("projects")
 }
 
 model Task {
   id          String     @id @default(cuid())
-  goalId      String     @map("goal_id")
+  projectId   String     @map("project_id")
   title       String
   description String?
   status      TaskStatus @default(TODO)
@@ -84,10 +77,10 @@ model Task {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   completedAt DateTime?  @map("completed_at")
-  goal        Goal          @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   comments    TaskComment[]
 
-  @@index([goalId])
+  @@index([projectId])
   @@map("tasks")
 }
 

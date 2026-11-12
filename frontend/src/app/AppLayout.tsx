@@ -26,7 +26,7 @@ import { radius } from './theme';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: DashboardOutlinedIcon, end: true },
-  { to: '/goals', label: 'Goals', icon: FlagOutlinedIcon, end: false },
+  { to: '/projects', label: 'Projects', icon: FlagOutlinedIcon, end: false },
   { to: '/board', label: 'Board', icon: ViewKanbanOutlinedIcon, end: false },
   { to: '/progress', label: 'Progress', icon: ShowChartOutlinedIcon, end: false },
 ] as const;

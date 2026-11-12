@@ -5,18 +5,18 @@ import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { useTaskMutations } from '../hooks/useTaskMutations';
-import { useTasksForGoal } from '../hooks/useTasks';
+import { useTasksForProject } from '../hooks/useTasks';
 import type { Task } from '../types';
 import { TaskFormDialog } from './TaskFormDialog';
 import { TaskList } from './TaskList';
 
-interface GoalTasksSectionProps {
-  goalId: string;
+interface ProjectTasksSectionProps {
+  projectId: string;
 }
 
-export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
-  const { data: tasks, isLoading, isError, error } = useTasksForGoal(goalId);
-  const { create, update, remove } = useTaskMutations(goalId);
+export function ProjectTasksSection({ projectId }: ProjectTasksSectionProps) {
+  const { data: tasks, isLoading, isError, error } = useTasksForProject(projectId);
+  const { create, update, remove } = useTaskMutations(projectId);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
@@ -41,9 +41,11 @@ export function GoalTasksSection({ goalId }: GoalTasksSectionProps) {
         sx={{ mb: 2.5 }}
       >
         <Box>
-          <Typography variant="h5" component="h2">Tasks</Typography>
+          <Typography variant="h5" component="h2">
+            Tasks
+          </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
-            Tasks for this goal. Drag and status changes happen on the shared board.
+            Tasks for this project. Status and drag-and-drop live on the board.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>

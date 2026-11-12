@@ -4,22 +4,22 @@ import { RequestUser } from '../auth/auth.types';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TasksService } from './tasks.service';
 
-@Controller('goals/:goalId/tasks')
-export class GoalTasksController {
+@Controller('projects/:projectId/tasks')
+export class ProjectTasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(
     @CurrentUser() user: RequestUser,
-    @Param('goalId') goalId: string,
+    @Param('projectId') projectId: string,
     @Body() dto: CreateTaskDto,
   ) {
-    return this.tasksService.createForGoal(user.id, goalId, dto);
+    return this.tasksService.createForProject(user.id, projectId, dto);
   }
 
   @Get()
-  findByGoal(@CurrentUser() user: RequestUser, @Param('goalId') goalId: string) {
-    return this.tasksService.findByGoal(user.id, goalId);
+  findByProject(@CurrentUser() user: RequestUser, @Param('projectId') projectId: string) {
+    return this.tasksService.findByProject(user.id, projectId);
   }
 }

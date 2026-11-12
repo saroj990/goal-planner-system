@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ProgressModule } from './progress/progress.module';
-import { GoalsModule } from './goals/goals.module';
+import { ProjectsModule } from './projects/projects.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TasksModule } from './tasks/tasks.module';
@@ -22,7 +22,7 @@ import { TasksModule } from './tasks/tasks.module';
     HealthModule,
     DashboardModule,
     ProgressModule,
-    GoalsModule,
+    ProjectsModule,
     TasksModule,
   ],
   providers: [

@@ -73,16 +73,16 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
           <Typography variant="body2" fontWeight={600} sx={{ wordBreak: 'break-word', lineHeight: 1.4 }}>
             {task.title}
           </Typography>
-          {task.goalTitle && (
+          {task.projectTitle && (
             <Typography
               component={RouterLink}
-              to={`/goals/${task.goalId}`}
+              to={`/projects/${task.projectId}`}
               variant="caption"
               color="text.secondary"
               onPointerDown={(e) => e.stopPropagation()}
               sx={{ mt: 0.25, display: 'block', textDecoration: 'none', '&:hover': { color: 'primary.main' } }}
             >
-              {task.goalTitle}
+              {task.projectTitle}
             </Typography>
           )}
           <Box onPointerDown={(e) => e.stopPropagation()}>

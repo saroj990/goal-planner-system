@@ -5,7 +5,7 @@ import { AppProviders } from './providers';
 import { HomePage } from '../pages/HomePage';
 
 describe('HomePage', () => {
-  it('renders welcome copy and link to goals', () => {
+  it('renders welcome copy and link to projects', () => {
     render(
       <AppProviders>
         <MemoryRouter>
@@ -14,7 +14,7 @@ describe('HomePage', () => {
       </AppProviders>,
     );
 
-    expect(screen.getByRole('heading', { name: /your goals/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /open goals/i })).toHaveAttribute('href', '/goals');
+    expect(screen.getByRole('heading', { name: /your projects/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /open projects/i })).toHaveAttribute('href', '/projects');
   });
 });

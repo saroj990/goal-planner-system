@@ -1,7 +1,6 @@
-import { GoalType } from '@prisma/client';
-import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class CreateGoalDto {
+export class CreateProjectDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)
@@ -11,9 +10,6 @@ export class CreateGoalDto {
   @IsString()
   @MaxLength(2000)
   description?: string;
-
-  @IsEnum(GoalType)
-  type!: GoalType;
 
   @IsOptional()
   @IsDateString()

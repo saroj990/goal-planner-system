@@ -52,27 +52,27 @@ pnpm --filter @goal-tracker/frontend dev
 
 | App      | URL                                      |
 |----------|------------------------------------------|
-| Frontend | http://localhost:5173 — `/goals` for Daily/Weekly/Monthly lists |
+| Frontend | http://localhost:5173 — `/projects` for project list and task management |
 | Backend  | http://localhost:3000/api/v1/health (`database: up` when Postgres is running) |
 
-### Goals API (Iteration 2 — backend)
+### Projects API
 
 Protected routes require `Authorization: Bearer <accessToken>` from `POST /api/v1/auth/login` or `POST /api/v1/auth/register`. Set `JWT_SECRET` in `.env` (see `.env.example`).
 
 | Method | Path | Notes |
 |--------|------|--------|
-| `GET` | `/api/v1/goals` | Optional query `?type=DAILY\|WEEKLY\|MONTHLY` |
-| `POST` | `/api/v1/goals` | Body: `title`, `type`, optional `description`, `startDate`, `dueDate`, `priority` |
-| `GET` | `/api/v1/goals/:id` | |
-| `PATCH` | `/api/v1/goals/:id` | |
-| `DELETE` | `/api/v1/goals/:id` | `204` |
+| `GET` | `/api/v1/projects` | List user projects |
+| `POST` | `/api/v1/projects` | Body: `title`, optional `description`, `startDate`, `dueDate`, `priority` |
+| `GET` | `/api/v1/projects/:id` | |
+| `PATCH` | `/api/v1/projects/:id` | Status: `ACTIVE`, `COMPLETED`, `ARCHIVED` |
+| `DELETE` | `/api/v1/projects/:id` | `204` |
 
 ### Tasks API (Iteration 3 — backend)
 
 | Method | Path | Notes |
 |--------|------|--------|
-| `POST` | `/api/v1/goals/:goalId/tasks` | Body: `title`, optional `description`, `dueDate`, `priority`; assigns `position` |
-| `GET` | `/api/v1/goals/:goalId/tasks` | Ordered by `position` |
+| `POST` | `/api/v1/projects/:projectId/tasks` | Body: `title`, optional `description`, `dueDate`, `priority`; assigns `position` |
+| `GET` | `/api/v1/projects/:projectId/tasks` | Ordered by `position` |
 | `GET` | `/api/v1/tasks/:id` | |
 | `PATCH` | `/api/v1/tasks/:id` | `status`: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` |
 | `DELETE` | `/api/v1/tasks/:id` | `204` |

@@ -1,6 +1,6 @@
 export interface ProgressDayPoint {
   date: string;
-  goals: { daily: number; weekly: number; monthly: number };
+  projects: number;
   tasks: number;
 }
 

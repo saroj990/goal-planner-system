@@ -1,19 +1,21 @@
-import type { Goal } from '../goals/types';
+import type { Project } from '../projects/types';
 import type { Task } from '../tasks/types';
 
 export interface DashboardSummary {
-  goalsCompleted: number;
-  goalsTotal: number;
+  filterProjectId: string | null;
+  projectsCompleted: number;
+  projectsTotal: number;
   tasksCompleted: number;
   tasksTotal: number;
   completionPercent: number;
-  activeGoalsCount: number;
-  overdueGoals: Goal[];
-  todaysGoals: Goal[];
-  todaysTasks: Task[];
+  activeProjectsCount: number;
+  overdueProjects: Project[];
+  activeProjects: Project[];
+  tasks: Task[];
   tasksByStatus: {
     todo: Task[];
     inProgress: Task[];
+    blocked: Task[];
     done: Task[];
   };
 }

@@ -29,7 +29,7 @@ export function ProgressPage() {
         <Box>
           <Typography variant="h4" component="h1">Progress</Typography>
           <Typography color="text.secondary" variant="body2" sx={{ mt: 0.5 }}>
-            Completions over time by goal type and tasks.
+            Completed projects and tasks over time.
           </Typography>
         </Box>
         <ToggleButtonGroup

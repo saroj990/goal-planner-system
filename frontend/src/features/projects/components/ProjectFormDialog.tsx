@@ -9,26 +9,19 @@ import {
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import type { CreateGoalInput, Goal, GoalType } from '../types';
+import type { CreateProjectInput, Project, ProjectStatus } from '../types';
 
-interface GoalFormDialogProps {
+interface ProjectFormDialogProps {
   open: boolean;
-  initial?: Goal | null;
-  defaultType: GoalType;
+  initial?: Project | null;
   onClose: () => void;
-  onSubmit: (input: CreateGoalInput) => Promise<void>;
+  onSubmit: (input: CreateProjectInput & { status?: ProjectStatus }) => Promise<void>;
 }
 
-export function GoalFormDialog({
-  open,
-  initial,
-  defaultType,
-  onClose,
-  onSubmit,
-}: GoalFormDialogProps) {
+export function ProjectFormDialog({ open, initial, onClose, onSubmit }: ProjectFormDialogProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<GoalType>(defaultType);
+  const [status, setStatus] = useState<ProjectStatus | ''>('');
   const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -37,11 +30,11 @@ export function GoalFormDialog({
     if (open) {
       setTitle(initial?.title ?? '');
       setDescription(initial?.description ?? '');
-      setType(initial?.type ?? defaultType);
+      setStatus(initial?.status ?? '');
       setStartDate(initial?.startDate?.slice(0, 10) ?? '');
       setDueDate(initial?.dueDate?.slice(0, 10) ?? '');
     }
-  }, [open, initial, defaultType]);
+  }, [open, initial]);
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
@@ -49,10 +42,10 @@ export function GoalFormDialog({
     try {
       await onSubmit({
         title: title.trim(),
-        type,
         description: description.trim() || undefined,
         startDate: startDate || undefined,
         dueDate: dueDate || undefined,
+        ...(status ? { status } : {}),
       });
       onClose();
     } finally {
@@ -62,11 +55,11 @@ export function GoalFormDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{initial ? 'Edit goal' : 'Add goal'}</DialogTitle>
+      <DialogTitle>{initial ? 'Edit project' : 'New project'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
           <TextField
-            label="Title"
+            label="Project name"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -81,17 +74,19 @@ export function GoalFormDialog({
             multiline
             minRows={2}
           />
-          <TextField
-            select
-            label="Type"
-            value={type}
-            onChange={(e) => setType(e.target.value as GoalType)}
-            fullWidth
-          >
-            <MenuItem value="DAILY">Daily</MenuItem>
-            <MenuItem value="WEEKLY">Weekly</MenuItem>
-            <MenuItem value="MONTHLY">Monthly</MenuItem>
-          </TextField>
+          {initial ? (
+            <TextField
+              select
+              label="Status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as ProjectStatus)}
+              fullWidth
+            >
+              <MenuItem value="ACTIVE">Active</MenuItem>
+              <MenuItem value="COMPLETED">Completed</MenuItem>
+              <MenuItem value="ARCHIVED">Archived</MenuItem>
+            </TextField>
+          ) : null}
           <TextField
             label="Start date"
             type="date"

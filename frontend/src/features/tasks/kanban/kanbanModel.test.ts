@@ -13,7 +13,7 @@ import {
 
 const baseTask = (overrides: Partial<Task>): Task => ({
   id: '1',
-  goalId: 'g1',
+  projectId: 'p1',
   title: 'T',
   description: null,
   status: TaskStatus.TODO,

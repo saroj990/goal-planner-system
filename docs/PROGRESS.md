@@ -1,9 +1,9 @@
 # Goal Tracker — implementation progress
 
-**Last updated:** 2026-10-02  
+**Last updated:** 2026-11-12  
 **Current iteration:** 7 — Production hardening (in progress)  
 **Status:** in progress  
-**Current focus:** Docker production path; task comments (markdown) on goal detail tasks.
+**Current focus:** Project-centric domain (projects → tasks); dashboard project filter.
 
 **UI refresh (2026-09-30):** Sidebar navigation, calmer theme, Kanban cross-column drag (todo → in progress → done).
 
@@ -70,6 +70,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
+- **Project-centric model:** Goals renamed/migrated to `projects` (no daily/weekly/monthly type); tasks use `projectId`; `/api/v1/projects`; dashboard `?projectId=` filter; UI `/projects`, redirects from `/goals`.
 - **Task comments:** `TaskComment` model; `GET/POST/DELETE /tasks/:taskId/comments`; markdown UI on goal detail task list (`react-markdown`).
 - **JWT auth (end-to-end):** `AuthModule`, global `JwtAuthGuard`, `@Public()` health + auth routes; goals/tasks/dashboard/progress scoped by JWT user; Prisma `password_hash` + `PasswordResetToken`; frontend login/register/forgot/reset/profile, `AuthProvider`, protected routes, Bearer on `apiClient`.
 - **Step 13 — Progress UI:** ECharts completion chart, `/progress` route.
@@ -94,6 +95,7 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | `before-implementing.mdc` — follow all rules and user step approval before coding. |
 | 2026-09-30 | Prisma `cuid` IDs; goal/task enums per architecture plan; `onDelete: Cascade` goal→tasks. |
 | 2026-09-30 | API errors: `statusCode`, `error`, `message`, `path`, `timestamp` via global exception filter. |
+| 2026-11-12 | **Projects replace goals** for V1 UX: each project has many tasks; dashboard filtered by project (user-requested pivot from goal types). |
 | 2026-10-02 | Replaced dev-user scoping with JWT; register/login required for app APIs; forgot-password logs reset URL (no email in V1). |
 | 2026-09-30 | Frontend API base via `VITE_API_URL` (see `.env.example`). |
 | 2026-09-30 | New tasks get `position` in steps of 100 per goal. |

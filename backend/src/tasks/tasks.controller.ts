@@ -8,9 +8,11 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { RequestUser } from '../auth/auth.types';
+import { ListTasksQueryDto } from './dto/list-tasks-query.dto';
 import { ReorderBoardDto } from './dto/reorder-board.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -33,8 +35,8 @@ export class TasksController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: RequestUser) {
-    return this.tasksService.findAllForUser(user.id);
+  findAll(@CurrentUser() user: RequestUser, @Query() query: ListTasksQueryDto) {
+    return this.tasksService.findAllForUser(user.id, query.projectId);
   }
 
   @Get(':id')

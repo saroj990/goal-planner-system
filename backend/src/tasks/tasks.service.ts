@@ -12,13 +12,13 @@ const POSITION_STEP = 100;
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createForGoal(userId: string, goalId: string, dto: CreateTaskDto): Promise<Task> {
-    await this.assertGoalOwned(userId, goalId);
-    const position = await this.nextPosition(goalId);
+  async createForProject(userId: string, projectId: string, dto: CreateTaskDto): Promise<Task> {
+    await this.assertProjectOwned(userId, projectId);
+    const position = await this.nextPosition(projectId);
 
     return this.prisma.task.create({
       data: {
-        goalId,
+        projectId,
         title: dto.title,
         description: dto.description,
         priority: dto.priority,
@@ -28,24 +28,32 @@ export class TasksService {
     });
   }
 
-  async findByGoal(userId: string, goalId: string): Promise<Task[]> {
-    await this.assertGoalOwned(userId, goalId);
+  async findByProject(userId: string, projectId: string): Promise<Task[]> {
+    await this.assertProjectOwned(userId, projectId);
     return this.prisma.task.findMany({
-      where: { goalId },
+      where: { projectId },
       orderBy: { position: 'asc' },
     });
   }
 
-  async findAllForUser(userId: string): Promise<Array<Task & { goalTitle: string }>> {
+  async findAllForUser(
+    userId: string,
+    projectId?: string,
+  ): Promise<Array<Task & { projectTitle: string }>> {
     const tasks = await this.prisma.task.findMany({
-      where: { goal: { userId } },
+      where: {
+        project: {
+          userId,
+          ...(projectId ? { id: projectId } : {}),
+        },
+      },
       orderBy: [{ position: 'asc' }, { updatedAt: 'asc' }],
-      include: { goal: { select: { title: true } } },
+      include: { project: { select: { title: true } } },
     });
 
-    return tasks.map(({ goal, ...task }) => ({
+    return tasks.map(({ project, ...task }) => ({
       ...task,
-      goalTitle: goal.title,
+      projectTitle: project.title,
     }));
   }
 
@@ -82,16 +90,16 @@ export class TasksService {
   }
 
   async reorder(userId: string, dto: ReorderTasksDto): Promise<Task[]> {
-    await this.assertGoalOwned(userId, dto.goalId);
+    await this.assertProjectOwned(userId, dto.projectId);
     const taskIds = dto.items.map((item) => item.id);
 
     const existing = await this.prisma.task.findMany({
-      where: { id: { in: taskIds }, goalId: dto.goalId, goal: { userId } },
+      where: { id: { in: taskIds }, projectId: dto.projectId, project: { userId } },
       select: { id: true },
     });
 
     if (existing.length !== dto.items.length) {
-      throw new NotFoundException('One or more tasks not found for this goal');
+      throw new NotFoundException('One or more tasks not found for this project');
     }
 
     const uniquePositions = new Set(dto.items.map((item) => item.position));
@@ -112,14 +120,14 @@ export class TasksService {
       ),
     );
 
-    return this.findByGoal(userId, dto.goalId);
+    return this.findByProject(userId, dto.projectId);
   }
 
-  async reorderBoard(userId: string, dto: ReorderBoardDto): Promise<Array<Task & { goalTitle: string }>> {
+  async reorderBoard(userId: string, dto: ReorderBoardDto): Promise<Array<Task & { projectTitle: string }>> {
     const taskIds = dto.items.map((item) => item.id);
 
     const existing = await this.prisma.task.findMany({
-      where: { id: { in: taskIds }, goal: { userId } },
+      where: { id: { in: taskIds }, project: { userId } },
       select: { id: true },
     });
 
@@ -148,27 +156,27 @@ export class TasksService {
     return this.findAllForUser(userId);
   }
 
-  private async nextPosition(goalId: string): Promise<number> {
+  private async nextPosition(projectId: string): Promise<number> {
     const last = await this.prisma.task.findFirst({
-      where: { goalId },
+      where: { projectId },
       orderBy: { position: 'desc' },
       select: { position: true },
     });
     return last ? last.position + POSITION_STEP : POSITION_STEP;
   }
 
-  private async assertGoalOwned(userId: string, goalId: string): Promise<void> {
-    const goal = await this.prisma.goal.findFirst({
-      where: { id: goalId, userId },
+  private async assertProjectOwned(userId: string, projectId: string): Promise<void> {
+    const project = await this.prisma.project.findFirst({
+      where: { id: projectId, userId },
     });
-    if (!goal) {
-      throw new NotFoundException(`Goal ${goalId} not found`);
+    if (!project) {
+      throw new NotFoundException(`Project ${projectId} not found`);
     }
   }
 
   private async assertTaskOwned(userId: string, taskId: string): Promise<Task> {
     const task = await this.prisma.task.findFirst({
-      where: { id: taskId, goal: { userId } },
+      where: { id: taskId, project: { userId } },
     });
     if (!task) {
       throw new NotFoundException(`Task ${taskId} not found`);

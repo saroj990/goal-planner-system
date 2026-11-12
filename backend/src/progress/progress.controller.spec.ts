@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { GoalStatus, GoalType } from '@prisma/client';
+import { ProjectStatus } from '@prisma/client';
 import request from 'supertest';
 import { authHeader, registerAndLogin } from '../../test/auth-test.helper';
 import { AppModule } from '../app.module';
@@ -13,7 +13,7 @@ describeIfDb('Progress API (integration)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let accessToken: string;
-  const goalIds: string[] = [];
+  const projectIds: string[] = [];
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
@@ -26,22 +26,22 @@ describeIfDb('Progress API (integration)', () => {
   });
 
   afterAll(async () => {
-    if (goalIds.length) await prisma.goal.deleteMany({ where: { id: { in: goalIds } } });
+    if (projectIds.length) await prisma.project.deleteMany({ where: { id: { in: projectIds } } });
     await app.close();
   });
 
   it('GET /progress returns daily series', async () => {
-    const goal = await request(app.getHttpServer())
-      .post('/api/v1/goals')
+    const project = await request(app.getHttpServer())
+      .post('/api/v1/projects')
       .set(authHeader(accessToken))
-      .send({ title: 'Progress goal', type: GoalType.WEEKLY })
+      .send({ title: 'Progress project' })
       .expect(201);
-    goalIds.push(goal.body.id);
+    projectIds.push(project.body.id);
 
     await request(app.getHttpServer())
-      .patch(`/api/v1/goals/${goal.body.id}`)
+      .patch(`/api/v1/projects/${project.body.id}`)
       .set(authHeader(accessToken))
-      .send({ status: GoalStatus.COMPLETED })
+      .send({ status: ProjectStatus.COMPLETED })
       .expect(200);
 
     const res = await request(app.getHttpServer())
@@ -52,14 +52,14 @@ describeIfDb('Progress API (integration)', () => {
     expect(res.body.days).toHaveLength(7);
     expect(res.body.days[0]).toMatchObject({
       date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-      goals: { daily: expect.any(Number), weekly: expect.any(Number), monthly: expect.any(Number) },
+      projects: expect.any(Number),
       tasks: expect.any(Number),
     });
 
-    const weeklyTotal = res.body.days.reduce(
-      (sum: number, d: { goals: { weekly: number } }) => sum + d.goals.weekly,
+    const projectTotal = res.body.days.reduce(
+      (sum: number, d: { projects: number }) => sum + d.projects,
       0,
     );
-    expect(weeklyTotal).toBeGreaterThanOrEqual(1);
+    expect(projectTotal).toBeGreaterThanOrEqual(1);
   });
 });

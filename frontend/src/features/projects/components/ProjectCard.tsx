@@ -10,19 +10,19 @@ import {
   Typography,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import type { Goal } from '../types';
+import type { Project } from '../types';
 
 function formatDate(value: string | null): string | null {
   if (!value) return null;
   return value.slice(0, 10);
 }
 
-interface GoalCardProps {
-  goal: Goal;
+interface ProjectCardProps {
+  project: Project;
 }
 
-export function GoalCard({ goal }: GoalCardProps) {
-  const due = formatDate(goal.dueDate);
+export function ProjectCard({ project }: ProjectCardProps) {
+  const due = formatDate(project.dueDate);
 
   return (
     <Card
@@ -33,27 +33,28 @@ export function GoalCard({ goal }: GoalCardProps) {
         },
       }}
     >
-      <CardActionArea component={RouterLink} to={`/goals/${goal.id}`} sx={{ p: 0.5 }}>
+      <CardActionArea component={RouterLink} to={`/projects/${project.id}`} sx={{ p: 0.5 }}>
         <CardContent>
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={1}>
             <Typography variant="h6" component="h2" fontWeight={600}>
-              {goal.title}
+              {project.title}
             </Typography>
-            <Chip label={goal.status} size="small" variant="outlined" />
+            <Chip label={project.status} size="small" variant="outlined" />
           </Stack>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
-            {goal.type}
-            {due ? ` · Due ${due}` : ''}
-          </Typography>
+          {project.description ? (
+            <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
+              {project.description}
+            </Typography>
+          ) : null}
+          {due ? (
+            <Typography color="text.secondary" variant="caption" sx={{ mt: 0.5, display: 'block' }}>
+              Due {due}
+            </Typography>
+          ) : null}
         </CardContent>
       </CardActionArea>
       <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
-        <Button
-          component={RouterLink}
-          to="/board"
-          size="small"
-          startIcon={<ViewKanbanOutlinedIcon />}
-        >
+        <Button component={RouterLink} to="/board" size="small" startIcon={<ViewKanbanOutlinedIcon />}>
           Board
         </Button>
       </CardActions>
