@@ -14,9 +14,10 @@ interface KanbanColumnProps {
   tasks: Task[];
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
+  canManage?: boolean;
 }
 
-export function KanbanColumn({ status, tasks, onEdit, onDelete }: KanbanColumnProps) {
+export function KanbanColumn({ status, tasks, onEdit, onDelete, canManage = true }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: columnDropId(status) });
   const { bg, color } = taskStatusColors(status);
 
@@ -75,7 +76,13 @@ export function KanbanColumn({ status, tasks, onEdit, onDelete }: KanbanColumnPr
             </Typography>
           )}
           {tasks.map((task) => (
-            <KanbanTaskCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} />
+            <KanbanTaskCard
+              key={task.id}
+              task={task}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              canManage={canManage}
+            />
           ))}
         </Stack>
       </SortableContext>

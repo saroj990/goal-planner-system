@@ -15,9 +15,16 @@ interface KanbanTaskCardProps {
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
   isOverlay?: boolean;
+  canManage?: boolean;
 }
 
-export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTaskCardProps) {
+export function KanbanTaskCard({
+  task,
+  onEdit,
+  onDelete,
+  isOverlay,
+  canManage = true,
+}: KanbanTaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     disabled: isOverlay,
@@ -106,14 +113,16 @@ export function KanbanTaskCard({ task, onEdit, onDelete, isOverlay }: KanbanTask
             <TaskDueDateBadge dueDate={task.dueDate} />
           </Stack>
         </Box>
-        <Stack direction="row" spacing={0} onPointerDown={(e) => e.stopPropagation()}>
-          <IconButton size="small" aria-label="Edit task" onClick={() => onEdit(task)}>
-            <EditOutlinedIcon sx={{ fontSize: 16 }} />
-          </IconButton>
-          <IconButton size="small" aria-label="Delete task" color="error" onClick={() => onDelete(task)}>
-            <DeleteOutlineIcon sx={{ fontSize: 16 }} />
-          </IconButton>
-        </Stack>
+        {canManage ? (
+          <Stack direction="row" spacing={0} onPointerDown={(e) => e.stopPropagation()}>
+            <IconButton size="small" aria-label="Edit task" onClick={() => onEdit(task)}>
+              <EditOutlinedIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+            <IconButton size="small" aria-label="Delete task" color="error" onClick={() => onDelete(task)}>
+              <DeleteOutlineIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Stack>
+        ) : null}
       </Stack>
     </Paper>
   );

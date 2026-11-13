@@ -4,6 +4,7 @@ import { Alert, Box, Button, CircularProgress, Stack, Typography } from '@mui/ma
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
+import { useAuth } from '../../auth/hooks/useAuth';
 import { useTaskMutations } from '../hooks/useTaskMutations';
 import { useTasksForProject } from '../hooks/useTasks';
 import type { Task } from '../types';
@@ -15,6 +16,8 @@ interface ProjectTasksSectionProps {
 }
 
 export function ProjectTasksSection({ projectId }: ProjectTasksSectionProps) {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const { data: tasks, isLoading, isError, error } = useTasksForProject(projectId);
   const { create, update, remove } = useTaskMutations(projectId);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -32,7 +35,7 @@ export function ProjectTasksSection({ projectId }: ProjectTasksSectionProps) {
   };
 
   return (
-    <Box sx={{ mt: 3 }}>
+    <Box>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"
@@ -41,26 +44,30 @@ export function ProjectTasksSection({ projectId }: ProjectTasksSectionProps) {
         sx={{ mb: 2.5 }}
       >
         <Box>
-          <Typography variant="h5" component="h2">
+          <Typography variant="h5" component="h2" sx={{ letterSpacing: '-0.02em' }}>
             Tasks
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
-            Tasks for this project. Status and drag-and-drop live on the board.
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, maxWidth: 480 }}>
+            {isAdmin
+              ? 'Assign tasks to Saroj or Tejeshw. Status and drag-and-drop live on the board.'
+              : 'Your assigned tasks for this project. Update status here or on the board.'}
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
           <Button
             component={RouterLink}
-            to="/board"
+            to={`/board?projectId=${projectId}`}
             size="small"
             variant="outlined"
             startIcon={<ViewKanbanOutlinedIcon />}
           >
             Open board
           </Button>
-          <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={openCreate}>
-            Add task
-          </Button>
+          {isAdmin ? (
+            <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={openCreate}>
+              Add task
+            </Button>
+          ) : null}
         </Stack>
       </Stack>
 
@@ -79,26 +86,29 @@ export function ProjectTasksSection({ projectId }: ProjectTasksSectionProps) {
       {!isLoading && !isError && (
         <TaskList
           tasks={tasks ?? []}
-          onEdit={openEdit}
-          onDelete={(task) => setTaskToDelete(task)}
+          onEdit={isAdmin ? openEdit : () => undefined}
+          onDelete={isAdmin ? (task) => setTaskToDelete(task) : () => undefined}
+          canManage={isAdmin}
           onStatusChange={async (task, status) => {
             await update.mutateAsync({ taskId: task.id, input: { status } });
           }}
         />
       )}
 
-      <TaskFormDialog
-        open={dialogOpen}
-        initial={editing}
-        onClose={() => setDialogOpen(false)}
-        onSubmit={async (input) => {
-          if (editing) {
-            await update.mutateAsync({ taskId: editing.id, input });
-          } else {
-            await create.mutateAsync(input);
-          }
-        }}
-      />
+      {isAdmin ? (
+        <TaskFormDialog
+          open={dialogOpen}
+          initial={editing}
+          onClose={() => setDialogOpen(false)}
+          onSubmit={async (input) => {
+            if (editing) {
+              await update.mutateAsync({ taskId: editing.id, input });
+            } else {
+              await create.mutateAsync(input);
+            }
+          }}
+        />
+      ) : null}
 
       <ConfirmDialog
         open={taskToDelete !== null}

@@ -95,17 +95,12 @@ export class AuthService {
     return { message: 'Password updated. You can sign in with your new password.' };
   }
 
-  private issueTokens(user: { id: string; email: string; name: string; createdAt: Date }): AuthTokensResponse {
-    const payload = { sub: user.id, email: user.email };
+  private issueTokens(user: Parameters<UsersService['toAuthUser']>[0]): AuthTokensResponse {
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload);
     return {
       accessToken,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.createdAt,
-      },
+      user: this.usersService.toAuthUser(user),
     };
   }
 

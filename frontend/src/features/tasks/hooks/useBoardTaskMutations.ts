@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createTask, deleteTask, reorderBoardTasks, updateTask } from '../api/tasksApi';
 import type { CreateTaskInput, UpdateTaskInput } from '../types';
-import { tasksQueryKeys } from './useTasks';
 
 export function useBoardTaskMutations() {
   const queryClient = useQueryClient();

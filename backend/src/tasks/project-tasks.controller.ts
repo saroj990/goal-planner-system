@@ -15,11 +15,11 @@ export class ProjectTasksController {
     @Param('projectId') projectId: string,
     @Body() dto: CreateTaskDto,
   ) {
-    return this.tasksService.createForProject(user.id, projectId, dto);
+    return this.tasksService.createForProject(user, projectId, dto);
   }
 
   @Get()
   findByProject(@CurrentUser() user: RequestUser, @Param('projectId') projectId: string) {
-    return this.tasksService.findByProject(user.id, projectId);
+    return this.tasksService.findByProject(user, projectId);
   }
 }

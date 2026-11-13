@@ -1,8 +1,10 @@
-import { Alert, Button, Card, CardContent, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Button, Stack, TextField, Typography } from '@mui/material';
 import { FormEvent, useState } from 'react';
+import { PageHeader } from '../components/PageHeader';
+import { SectionCard } from '../components/SectionCard';
 import * as authApi from '../features/auth/api/authApi';
 import { useAuth } from '../features/auth/hooks/useAuth';
-import { cardSurfaceSx } from '../app/theme';
+import { initialsFromName } from '../features/users/userDisplay';
 import { ApiError } from '../services/apiClient';
 
 export function ProfilePage() {
@@ -31,28 +33,50 @@ export function ProfilePage() {
   if (!user) return null;
 
   return (
-    <Stack spacing={3}>
-      <Typography variant="h4" component="h1">Profile</Typography>
+    <Stack spacing={3} sx={{ maxWidth: 520 }}>
+      <PageHeader
+        eyebrow="Account"
+        title="Profile"
+        description="Update how your name appears across tasks and comments."
+      />
 
-      <Card elevation={0} sx={(theme) => ({ ...cardSurfaceSx(theme), maxWidth: 480 })}>
-        <CardContent>
-          <Stack component="form" spacing={2.5} onSubmit={handleSubmit}>
-            {error ? <Alert severity="error">{error}</Alert> : null}
-            {success ? <Alert severity="success">{success}</Alert> : null}
-            <TextField label="Email" value={user.email} disabled fullWidth />
-            <TextField
-              label="Display name"
-              required
-              fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Button type="submit" variant="contained" disabled={submitting}>
-              {submitting ? 'Saving…' : 'Save changes'}
-            </Button>
+      <SectionCard>
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+          <Avatar
+            sx={{
+              width: 56,
+              height: 56,
+              bgcolor: 'primary.main',
+              fontWeight: 700,
+              fontSize: '1.1rem',
+            }}
+          >
+            {initialsFromName(user.name)}
+          </Avatar>
+          <Stack spacing={0.25}>
+            <Typography fontWeight={700}>{user.name}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {user.email}
+            </Typography>
           </Stack>
-        </CardContent>
-      </Card>
+        </Stack>
+
+        <Stack component="form" spacing={2.5} onSubmit={handleSubmit}>
+          {error ? <Alert severity="error">{error}</Alert> : null}
+          {success ? <Alert severity="success">{success}</Alert> : null}
+          <TextField label="Email" value={user.email} disabled fullWidth />
+          <TextField
+            label="Display name"
+            required
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Button type="submit" variant="contained" disabled={submitting}>
+            {submitting ? 'Saving…' : 'Save changes'}
+          </Button>
+        </Stack>
+      </SectionCard>
 
       <Button variant="outlined" color="inherit" onClick={logout} sx={{ alignSelf: 'flex-start' }}>
         Sign out

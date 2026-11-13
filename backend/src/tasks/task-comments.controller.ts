@@ -19,7 +19,7 @@ export class TaskCommentsController {
 
   @Get()
   list(@CurrentUser() user: RequestUser, @Param('taskId') taskId: string) {
-    return this.taskCommentsService.listForTask(user.id, taskId);
+    return this.taskCommentsService.listForTask(user, taskId);
   }
 
   @Post()
@@ -29,7 +29,7 @@ export class TaskCommentsController {
     @Param('taskId') taskId: string,
     @Body() dto: CreateTaskCommentDto,
   ) {
-    return this.taskCommentsService.create(user.id, taskId, dto);
+    return this.taskCommentsService.create(user, taskId, dto);
   }
 
   @Delete(':commentId')
@@ -39,6 +39,6 @@ export class TaskCommentsController {
     @Param('taskId') taskId: string,
     @Param('commentId') commentId: string,
   ) {
-    await this.taskCommentsService.remove(user.id, taskId, commentId);
+    await this.taskCommentsService.remove(user, taskId, commentId);
   }
 }

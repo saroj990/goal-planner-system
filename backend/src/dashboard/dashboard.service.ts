@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Project, ProjectStatus, Task, TaskStatus } from '@prisma/client';
+import { isAdmin } from '../auth/access';
+import { RequestUser } from '../auth/auth.types';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface DashboardResponse {
@@ -25,23 +27,36 @@ export interface DashboardResponse {
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getSummary(userId: string, projectId?: string): Promise<DashboardResponse> {
+  async getSummary(actor: RequestUser, projectId?: string): Promise<DashboardResponse> {
     if (projectId) {
       const project = await this.prisma.project.findFirst({
-        where: { id: projectId, userId },
+        where: isAdmin(actor)
+          ? { id: projectId }
+          : {
+              id: projectId,
+              OR: [
+                { userId: actor.id },
+                { tasks: { some: { assigneeId: actor.id } } },
+              ],
+            },
       });
       if (!project) {
         throw new NotFoundException(`Project ${projectId} not found`);
       }
     }
 
-    const projectWhere = {
-      userId,
-      ...(projectId ? { id: projectId } : {}),
-    };
-
     const projects = await this.prisma.project.findMany({
-      where: projectWhere,
+      where: isAdmin(actor)
+        ? {
+            ...(projectId ? { id: projectId } : {}),
+          }
+        : {
+            ...(projectId ? { id: projectId } : {}),
+            OR: [
+              { userId: actor.id },
+              { tasks: { some: { assigneeId: actor.id } } },
+            ],
+          },
       orderBy: { updatedAt: 'desc' },
     });
 
@@ -50,7 +65,10 @@ export class DashboardService {
       projectIds.length === 0
         ? []
         : await this.prisma.task.findMany({
-            where: { projectId: { in: projectIds } },
+            where: {
+              projectId: { in: projectIds },
+              ...(isAdmin(actor) ? {} : { assigneeId: actor.id }),
+            },
             orderBy: { position: 'asc' },
           });
 

@@ -1,9 +1,23 @@
-import { Alert, Button, Link, Stack, TextField } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { FormEvent, useEffect, useState } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../features/auth/components/AuthLayout';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import { ApiError } from '../services/apiClient';
+
+const DEMO_ACCOUNTS = [
+  { label: 'Admin', email: 'admin@goaltracker.local', password: 'Admin123!' },
+  { label: 'Saroj', email: 'saroj@goaltracker.local', password: 'Saroj123!' },
+  { label: 'Tejeshw', email: 'tejeshw@goaltracker.local', password: 'Tejeshw123!' },
+] as const;
 
 export function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -39,7 +53,7 @@ export function LoginPage() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Sign in to manage your goals and tasks"
+      subtitle="Admin assigns work to Saroj and Tejeshw. Members see their assigned tasks."
       footer={
         <>
           No account?{' '}
@@ -72,6 +86,44 @@ export function LoginPage() {
         <Button type="submit" variant="contained" size="large" disabled={submitting}>
           {submitting ? 'Signing in…' : 'Sign in'}
         </Button>
+
+        <Box
+          sx={{
+            p: 1.75,
+            borderRadius: 1,
+            border: '1px dashed',
+            borderColor: 'divider',
+            bgcolor: 'action.hover',
+          }}
+        >
+          <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" sx={{ mb: 1 }}>
+            Seeded accounts (after `pnpm -C backend db:seed`)
+          </Typography>
+          <Stack spacing={0.75}>
+            {DEMO_ACCOUNTS.map((account) => (
+              <Button
+                key={account.email}
+                size="small"
+                color="inherit"
+                onClick={() => {
+                  setEmail(account.email);
+                  setPassword(account.password);
+                }}
+                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+              >
+                <Box sx={{ textAlign: 'left' }}>
+                  <Typography variant="body2" fontWeight={700}>
+                    {account.label}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {account.email}
+                  </Typography>
+                </Box>
+              </Button>
+            ))}
+          </Stack>
+        </Box>
+
         <Link
           component={RouterLink}
           to="/forgot-password"

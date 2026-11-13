@@ -10,6 +10,6 @@ export class DashboardController {
 
   @Get()
   getDashboard(@CurrentUser() user: RequestUser, @Query() query: DashboardQueryDto) {
-    return this.dashboardService.getSummary(user.id, query.projectId);
+    return this.dashboardService.getSummary(user, query.projectId);
   }
 }

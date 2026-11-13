@@ -11,9 +11,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState, type ReactNode } from 'react';
+import { radius } from '../../../app/theme';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useAssignableUsers } from '../../users/hooks/useAssignableUsers';
-import type { CreateTaskInput, Task, TaskPriority } from '../types';
+import { TaskPriority, type CreateTaskInput, type Task } from '../types';
 import { TaskAssigneeField } from './TaskAssigneeField';
 import { TaskPriorityPicker } from './TaskPriorityPicker';
 
@@ -32,7 +33,7 @@ export function TaskFormDialog({ open, initial, onClose, onSubmit, extraFields }
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [priority, setPriority] = useState<TaskPriority>('MEDIUM');
+  const [priority, setPriority] = useState<TaskPriority>(TaskPriority.MEDIUM);
   const [assigneeId, setAssigneeId] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -41,10 +42,13 @@ export function TaskFormDialog({ open, initial, onClose, onSubmit, extraFields }
       setTitle(initial?.title ?? '');
       setDescription(initial?.description ?? '');
       setDueDate(initial?.dueDate?.slice(0, 10) ?? '');
-      setPriority(initial?.priority ?? 'MEDIUM');
-      setAssigneeId(initial?.assigneeId ?? user?.id ?? '');
+      setPriority(initial?.priority ?? TaskPriority.MEDIUM);
+      const defaultAssignee =
+        initial?.assigneeId ??
+        (user?.role === 'ADMIN' ? (assignableUsers?.[0]?.id ?? '') : (user?.id ?? ''));
+      setAssigneeId(defaultAssignee);
     }
-  }, [open, initial, user?.id]);
+  }, [open, initial, user?.id, user?.role, assignableUsers]);
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
@@ -100,7 +104,7 @@ export function TaskFormDialog({ open, initial, onClose, onSubmit, extraFields }
           <Box
             sx={{
               p: 2,
-              borderRadius: 2,
+              borderRadius: `${radius.control}px`,
               bgcolor: 'action.hover',
               border: '1px solid',
               borderColor: 'divider',

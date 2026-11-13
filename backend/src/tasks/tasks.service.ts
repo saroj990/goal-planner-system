@@ -1,5 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, Task, TaskStatus } from '@prisma/client';
+import { isAdmin } from '../auth/access';
+import { RequestUser } from '../auth/auth.types';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ReorderBoardDto } from './dto/reorder-board.dto';
@@ -18,12 +25,16 @@ const taskInclude = {
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createForProject(userId: string, projectId: string, dto: CreateTaskDto): Promise<TaskResponse> {
-    await this.assertProjectOwned(userId, projectId);
+  async createForProject(
+    actor: RequestUser,
+    projectId: string,
+    dto: CreateTaskDto,
+  ): Promise<TaskResponse> {
+    await this.assertProjectManage(actor, projectId);
     const assigneeId =
       dto.assigneeId === null
         ? null
-        : await this.resolveAssigneeId(dto.assigneeId ?? userId);
+        : await this.resolveAssigneeId(dto.assigneeId ?? actor.id);
     const position = await this.nextPosition(projectId);
 
     const task = await this.prisma.task.create({
@@ -41,32 +52,48 @@ export class TasksService {
     return toTaskResponse(task);
   }
 
-  async findByProject(userId: string, projectId: string): Promise<TaskResponse[]> {
-    await this.assertProjectOwned(userId, projectId);
+  async findByProject(actor: RequestUser, projectId: string): Promise<TaskResponse[]> {
+    await this.assertProjectView(actor, projectId);
     const tasks = await this.prisma.task.findMany({
-      where: { projectId },
+      where: {
+        projectId,
+        ...(isAdmin(actor) ? {} : { assigneeId: actor.id }),
+      },
       orderBy: { position: 'asc' },
       include: taskInclude,
     });
     return tasks.map(toTaskResponse);
   }
 
-  async findAllForUser(userId: string, projectId?: string): Promise<TaskResponse[]> {
+  async findAllForUser(
+    actor: RequestUser,
+    projectId?: string,
+    assigneeId?: string,
+  ): Promise<TaskResponse[]> {
+    if (projectId) {
+      await this.assertProjectView(actor, projectId);
+    }
+
+    const where: Prisma.TaskWhereInput = {
+      ...(projectId ? { projectId } : {}),
+    };
+
+    if (isAdmin(actor)) {
+      if (assigneeId) where.assigneeId = assigneeId;
+    } else {
+      where.OR = [{ assigneeId: actor.id }, { project: { userId: actor.id } }];
+    }
+
     const tasks = await this.prisma.task.findMany({
-      where: {
-        project: {
-          userId,
-          ...(projectId ? { id: projectId } : {}),
-        },
-      },
+      where,
       orderBy: [{ position: 'asc' }, { updatedAt: 'asc' }],
       include: taskInclude,
     });
     return tasks.map(toTaskResponse);
   }
 
-  async findOne(userId: string, taskId: string): Promise<TaskResponse> {
-    const task = await this.assertTaskOwned(userId, taskId);
+  async findOne(actor: RequestUser, taskId: string): Promise<TaskResponse> {
+    const task = await this.assertTaskAccess(actor, taskId);
     const full = await this.prisma.task.findUniqueOrThrow({
       where: { id: task.id },
       include: taskInclude,
@@ -74,8 +101,19 @@ export class TasksService {
     return toTaskResponse(full);
   }
 
-  async update(userId: string, taskId: string, dto: UpdateTaskDto): Promise<TaskResponse> {
-    await this.assertTaskOwned(userId, taskId);
+  async update(actor: RequestUser, taskId: string, dto: UpdateTaskDto): Promise<TaskResponse> {
+    const existing = await this.assertTaskAccess(actor, taskId);
+    const canManage = isAdmin(actor) || existing.project.userId === actor.id;
+
+    if (!canManage) {
+      const allowedKeys = ['status'] as const;
+      const forbidden = Object.keys(dto).filter(
+        (key) => dto[key as keyof UpdateTaskDto] !== undefined && !allowedKeys.includes(key as 'status'),
+      );
+      if (forbidden.length > 0) {
+        throw new ForbiddenException('Members can only update status on assigned tasks');
+      }
+    }
 
     const data: Prisma.TaskUpdateInput = {
       ...(dto.title !== undefined ? { title: dto.title } : {}),
@@ -86,11 +124,14 @@ export class TasksService {
     };
 
     if (dto.assigneeId !== undefined) {
+      if (!canManage) {
+        throw new ForbiddenException('Only admin can reassign tasks');
+      }
       if (dto.assigneeId === null) {
         data.assignee = { disconnect: true };
       } else {
-        const assigneeId = await this.resolveAssigneeId(dto.assigneeId);
-        data.assignee = { connect: { id: assigneeId } };
+        const nextAssigneeId = await this.resolveAssigneeId(dto.assigneeId);
+        data.assignee = { connect: { id: nextAssigneeId } };
       }
     }
 
@@ -108,17 +149,20 @@ export class TasksService {
     return toTaskResponse(task);
   }
 
-  async remove(userId: string, taskId: string): Promise<void> {
-    await this.assertTaskOwned(userId, taskId);
+  async remove(actor: RequestUser, taskId: string): Promise<void> {
+    const task = await this.assertTaskAccess(actor, taskId);
+    if (!isAdmin(actor) && task.project.userId !== actor.id) {
+      throw new ForbiddenException('Only admin can delete tasks');
+    }
     await this.prisma.task.delete({ where: { id: taskId } });
   }
 
-  async reorder(userId: string, dto: ReorderTasksDto): Promise<TaskResponse[]> {
-    await this.assertProjectOwned(userId, dto.projectId);
+  async reorder(actor: RequestUser, dto: ReorderTasksDto): Promise<TaskResponse[]> {
+    await this.assertProjectManage(actor, dto.projectId);
     const taskIds = dto.items.map((item) => item.id);
 
     const existing = await this.prisma.task.findMany({
-      where: { id: { in: taskIds }, projectId: dto.projectId, project: { userId } },
+      where: { id: { in: taskIds }, projectId: dto.projectId },
       select: { id: true },
     });
 
@@ -144,14 +188,19 @@ export class TasksService {
       ),
     );
 
-    return this.findByProject(userId, dto.projectId);
+    return this.findByProject(actor, dto.projectId);
   }
 
-  async reorderBoard(userId: string, dto: ReorderBoardDto): Promise<TaskResponse[]> {
+  async reorderBoard(actor: RequestUser, dto: ReorderBoardDto): Promise<TaskResponse[]> {
     const taskIds = dto.items.map((item) => item.id);
 
     const existing = await this.prisma.task.findMany({
-      where: { id: { in: taskIds }, project: { userId } },
+      where: isAdmin(actor)
+        ? { id: { in: taskIds } }
+        : {
+            id: { in: taskIds },
+            OR: [{ assigneeId: actor.id }, { project: { userId: actor.id } }],
+          },
       select: { id: true },
     });
 
@@ -177,7 +226,7 @@ export class TasksService {
       ),
     );
 
-    return this.findAllForUser(userId);
+    return this.findAllForUser(actor);
   }
 
   private async resolveAssigneeId(assigneeId: string): Promise<string> {
@@ -197,18 +246,45 @@ export class TasksService {
     return last ? last.position + POSITION_STEP : POSITION_STEP;
   }
 
-  private async assertProjectOwned(userId: string, projectId: string): Promise<void> {
+  private async assertProjectManage(actor: RequestUser, projectId: string): Promise<void> {
+    if (!isAdmin(actor)) {
+      throw new ForbiddenException('Only admin can manage project tasks');
+    }
+    const project = await this.prisma.project.findFirst({ where: { id: projectId } });
+    if (!project) {
+      throw new NotFoundException(`Project ${projectId} not found`);
+    }
+  }
+
+  private async assertProjectView(actor: RequestUser, projectId: string): Promise<void> {
     const project = await this.prisma.project.findFirst({
-      where: { id: projectId, userId },
+      where: isAdmin(actor)
+        ? { id: projectId }
+        : {
+            id: projectId,
+            OR: [
+              { userId: actor.id },
+              { tasks: { some: { assigneeId: actor.id } } },
+            ],
+          },
     });
     if (!project) {
       throw new NotFoundException(`Project ${projectId} not found`);
     }
   }
 
-  private async assertTaskOwned(userId: string, taskId: string): Promise<Task> {
+  private async assertTaskAccess(
+    actor: RequestUser,
+    taskId: string,
+  ): Promise<Task & { project: { userId: string } }> {
     const task = await this.prisma.task.findFirst({
-      where: { id: taskId, project: { userId } },
+      where: isAdmin(actor)
+        ? { id: taskId }
+        : {
+            id: taskId,
+            OR: [{ assigneeId: actor.id }, { project: { userId: actor.id } }],
+          },
+      include: { project: { select: { userId: true } } },
     });
     if (!task) {
       throw new NotFoundException(`Task ${taskId} not found`);

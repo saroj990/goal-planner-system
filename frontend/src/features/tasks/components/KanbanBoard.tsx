@@ -30,6 +30,7 @@ interface KanbanBoardProps {
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
   onReorder: (payload: ReturnType<typeof buildBoardReorderPayload>) => void;
+  canManage?: boolean;
 }
 
 const collisionDetection: CollisionDetection = (args) => {
@@ -38,7 +39,7 @@ const collisionDetection: CollisionDetection = (args) => {
   return rectIntersection(args);
 };
 
-export function KanbanBoard({ tasks, onEdit, onDelete, onReorder }: KanbanBoardProps) {
+export function KanbanBoard({ tasks, onEdit, onDelete, onReorder, canManage = true }: KanbanBoardProps) {
   const [columns, setColumns] = useState(() => groupTasksByStatus(tasks));
   const columnsRef = useRef(columns);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -121,6 +122,7 @@ export function KanbanBoard({ tasks, onEdit, onDelete, onReorder }: KanbanBoardP
             tasks={columns[status]}
             onEdit={onEdit}
             onDelete={onDelete}
+            canManage={canManage}
           />
         ))}
       </Box>

@@ -1,16 +1,18 @@
+import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
 import {
+  Box,
   Button,
   Card,
   CardActionArea,
   CardActions,
   CardContent,
-  Chip,
   Stack,
   Typography,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import type { Project } from '../types';
+import { ProjectStatusChip } from './ProjectStatusChip';
 
 function formatDate(value: string | null): string | null {
   if (!value) return null;
@@ -27,35 +29,60 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Card
       sx={{
+        overflow: 'hidden',
         '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
+          transform: 'translateY(-3px)',
+          boxShadow: (theme) =>
+            theme.palette.mode === 'dark'
+              ? '0 16px 36px rgba(0,0,0,0.35)'
+              : '0 14px 32px rgba(15, 23, 42, 0.08)',
         },
       }}
     >
-      <CardActionArea component={RouterLink} to={`/projects/${project.id}`} sx={{ p: 0.5 }}>
-        <CardContent>
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={1}>
-            <Typography variant="h6" component="h2" fontWeight={600}>
-              {project.title}
-            </Typography>
-            <Chip label={project.status} size="small" variant="outlined" />
+      <CardActionArea component={RouterLink} to={`/projects/${project.id}`} sx={{ p: 0 }}>
+        <CardContent sx={{ p: 2.75 }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={1.5}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="h6" component="h2" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                {project.title}
+              </Typography>
+              {project.description ? (
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  sx={{
+                    mt: 1,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {project.description}
+                </Typography>
+              ) : null}
+            </Box>
+            <ProjectStatusChip status={project.status} />
           </Stack>
-          {project.description ? (
-            <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
-              {project.description}
-            </Typography>
-          ) : null}
           {due ? (
-            <Typography color="text.secondary" variant="caption" sx={{ mt: 0.5, display: 'block' }}>
-              Due {due}
-            </Typography>
+            <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mt: 2 }}>
+              <CalendarTodayOutlinedIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
+              <Typography color="text.secondary" variant="caption" fontWeight={600}>
+                Due {due}
+              </Typography>
+            </Stack>
           ) : null}
         </CardContent>
       </CardActionArea>
-      <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
-        <Button component={RouterLink} to="/board" size="small" startIcon={<ViewKanbanOutlinedIcon />}>
-          Board
+      <CardActions sx={{ px: 2.5, pb: 2, pt: 0 }}>
+        <Button
+          component={RouterLink}
+          to={`/board?projectId=${project.id}`}
+          size="small"
+          startIcon={<ViewKanbanOutlinedIcon />}
+        >
+          Open board
         </Button>
       </CardActions>
     </Card>

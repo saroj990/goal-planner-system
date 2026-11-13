@@ -1,48 +1,46 @@
+import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import {
   Box,
   IconButton,
-  MenuItem,
   Paper,
-  Select,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { EmptyState } from '../../../components/EmptyState';
 import type { Task } from '../types';
 import { TaskStatus } from '../types';
-import { TASK_STATUS_LABEL } from '../taskStatusStyle';
 import { TaskAssigneeChip } from './TaskAssigneeChip';
 import { TaskCommentsPanel } from './TaskCommentsPanel';
 import { TaskPriorityChip } from './TaskPriorityChip';
-import { TaskStatusChip } from './TaskStatusChip';
+import { TaskStatusPicker } from './TaskStatusPicker';
 
 interface TaskListProps {
   tasks: Task[];
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
   onStatusChange: (task: Task, status: TaskStatus) => void;
+  canManage?: boolean;
 }
 
-export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListProps) {
+export function TaskList({
+  tasks,
+  onEdit,
+  onDelete,
+  onStatusChange,
+  canManage = true,
+}: TaskListProps) {
   const [commentsOpenFor, setCommentsOpenFor] = useState<string | null>(null);
   if (tasks.length === 0) {
     return (
-      <Paper
-        variant="outlined"
-        sx={{
-          p: 4,
-          textAlign: 'center',
-          borderStyle: 'dashed',
-          bgcolor: 'background.paper',
-        }}
-      >
-        <Typography fontWeight={600} gutterBottom>No tasks yet</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Add tasks here or on the shared board.
-        </Typography>
-      </Paper>
+      <EmptyState
+        icon={<AddTaskOutlinedIcon />}
+        title="No tasks yet"
+        description="Add tasks here or drag work across statuses on the shared board."
+      />
     );
   }
 
@@ -53,11 +51,19 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
           key={task.id}
           elevation={0}
           sx={{
-            p: 2,
+            p: 2.25,
             display: 'flex',
             alignItems: 'flex-start',
             gap: 2,
             flexWrap: 'wrap',
+            transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+            '&:hover': {
+              borderColor: 'primary.light',
+              boxShadow: (theme) =>
+                theme.palette.mode === 'dark'
+                  ? '0 8px 20px rgba(0,0,0,0.28)'
+                  : '0 8px 20px rgba(15, 23, 42, 0.06)',
+            },
           }}
         >
           <Box sx={{ flex: 1, minWidth: 200 }}>
@@ -82,36 +88,30 @@ export function TaskList({ tasks, onEdit, onDelete, onStatusChange }: TaskListPr
             />
           </Box>
 
-          <Select
-            size="small"
+          <TaskStatusPicker
             value={task.status}
-            onChange={(e) => onStatusChange(task, e.target.value as TaskStatus)}
-            renderValue={(value) => <TaskStatusChip status={value as TaskStatus} />}
-            sx={{
-              minWidth: 140,
-              '& .MuiSelect-select': { py: 0.5, display: 'flex', alignItems: 'center' },
-            }}
-          >
-            {Object.values(TaskStatus).map((status) => (
-              <MenuItem key={status} value={status}>
-                {TASK_STATUS_LABEL[status]}
-              </MenuItem>
-            ))}
-          </Select>
+            onChange={(status) => onStatusChange(task, status)}
+          />
 
-          <Stack direction="row" spacing={0.5}>
-            <IconButton size="small" aria-label="Edit task" onClick={() => onEdit(task)}>
-              <EditOutlinedIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-              size="small"
-              aria-label="Delete task"
-              color="error"
-              onClick={() => onDelete(task)}
-            >
-              <DeleteOutlineIcon fontSize="small" />
-            </IconButton>
-          </Stack>
+          {canManage ? (
+            <Stack direction="row" spacing={0.5}>
+              <Tooltip title="Edit">
+                <IconButton size="small" aria-label="Edit task" onClick={() => onEdit(task)}>
+                  <EditOutlinedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <IconButton
+                  size="small"
+                  aria-label="Delete task"
+                  color="error"
+                  onClick={() => onDelete(task)}
+                >
+                  <DeleteOutlineIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          ) : null}
         </Paper>
       ))}
     </Stack>

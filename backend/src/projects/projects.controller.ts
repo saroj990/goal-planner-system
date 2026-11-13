@@ -21,27 +21,27 @@ export class ProjectsController {
 
   @Post()
   create(@CurrentUser() user: RequestUser, @Body() dto: CreateProjectDto) {
-    return this.projectsService.create(user.id, dto);
+    return this.projectsService.create(user, dto);
   }
 
   @Get()
   findAll(@CurrentUser() user: RequestUser) {
-    return this.projectsService.findAll(user.id);
+    return this.projectsService.findAll(user);
   }
 
   @Get(':id')
   findOne(@CurrentUser() user: RequestUser, @Param('id') id: string) {
-    return this.projectsService.findOne(user.id, id);
+    return this.projectsService.findOne(user, id);
   }
 
   @Patch(':id')
   update(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: UpdateProjectDto) {
-    return this.projectsService.update(user.id, id, dto);
+    return this.projectsService.update(user, id, dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@CurrentUser() user: RequestUser, @Param('id') id: string) {
-    await this.projectsService.remove(user.id, id);
+    await this.projectsService.remove(user, id);
   }
 }

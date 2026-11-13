@@ -27,6 +27,7 @@ See `.env.example` for `PORT`, `DATABASE_URL`, and `VITE_API_URL`.
 ```bash
 pnpm db:up
 pnpm db:migrate:deploy
+pnpm -C backend db:seed
 ```
 
 `DATABASE_URL` in `.env` should match Docker defaults:
@@ -34,6 +35,16 @@ pnpm db:migrate:deploy
 `postgresql://postgres:postgres@localhost:5432/goaltracker`
 
 Stop Postgres: `pnpm db:down`
+
+### Seeded logins
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@goaltracker.local` | `Admin123!` |
+| Member | `saroj@goaltracker.local` | `Saroj123!` |
+| Member | `tejeshw@goaltracker.local` | `Tejeshw123!` |
+
+Admin creates projects, assigns tasks to Saroj/Tejeshw, and can filter the board by assignee. Members see and update status on their assigned tasks.
 
 ## Development
 

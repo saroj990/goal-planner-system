@@ -24,7 +24,7 @@ describeIfDb('Users API (integration)', () => {
     await app.close();
   });
 
-  it('GET /users/assignable returns user list', async () => {
+  it('GET /users/assignable returns user list for the caller', async () => {
     const res = await request(app.getHttpServer())
       .get('/api/v1/users/assignable')
       .set(authHeader(accessToken))

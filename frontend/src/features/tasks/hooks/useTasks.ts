@@ -2,14 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchAllTasks, fetchTasksForProject } from '../api/tasksApi';
 
 export const tasksQueryKeys = {
-  all: (projectId?: string) => (projectId ? ['tasks', 'all', projectId] as const : ['tasks', 'all'] as const),
+  all: (filters?: { projectId?: string; assigneeId?: string }) =>
+    ['tasks', 'all', filters?.projectId ?? null, filters?.assigneeId ?? null] as const,
   byProject: (projectId: string) => ['tasks', 'project', projectId] as const,
 };
 
-export function useAllTasks(projectId?: string) {
+export function useAllTasks(filters?: { projectId?: string; assigneeId?: string }) {
   return useQuery({
-    queryKey: tasksQueryKeys.all(projectId),
-    queryFn: () => fetchAllTasks(projectId),
+    queryKey: tasksQueryKeys.all(filters),
+    queryFn: () => fetchAllTasks(filters),
   });
 }
 

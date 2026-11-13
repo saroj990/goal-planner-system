@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { isAdmin } from '../auth/access';
+import { RequestUser } from '../auth/auth.types';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface ProgressDayPoint {
@@ -18,31 +20,27 @@ const MAX_DAYS = 90;
 export class ProgressService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getHistory(userId: string, days = DEFAULT_DAYS): Promise<ProgressResponse> {
+  async getHistory(actor: RequestUser, days = DEFAULT_DAYS): Promise<ProgressResponse> {
     const span = Math.min(Math.max(days, 1), MAX_DAYS);
     const { start, keys } = dayRange(span);
 
     const projects = await this.prisma.project.findMany({
       where: {
-        userId,
+        ...(isAdmin(actor) ? {} : { userId: actor.id }),
         completedAt: { gte: start },
       },
     });
 
-    const projectIds = await this.prisma.project.findMany({
-      where: { userId },
-      select: { id: true },
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        completedAt: { gte: start },
+        ...(isAdmin(actor)
+          ? {}
+          : {
+              OR: [{ assigneeId: actor.id }, { project: { userId: actor.id } }],
+            }),
+      },
     });
-    const ids = projectIds.map((p) => p.id);
-    const tasks =
-      ids.length === 0
-        ? []
-        : await this.prisma.task.findMany({
-            where: {
-              projectId: { in: ids },
-              completedAt: { gte: start },
-            },
-          });
 
     const points = keys.map((date) => ({
       date,

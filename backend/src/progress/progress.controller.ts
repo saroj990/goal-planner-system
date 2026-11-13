@@ -10,6 +10,6 @@ export class ProgressController {
 
   @Get()
   getProgress(@CurrentUser() user: RequestUser, @Query() query: ListProgressQueryDto) {
-    return this.progressService.getHistory(user.id, query.days);
+    return this.progressService.getHistory(user, query.days);
   }
 }

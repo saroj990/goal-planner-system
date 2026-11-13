@@ -1,44 +1,43 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Stack,
-  Typography,
-} from '@mui/material';
+import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined';
+import { Alert, Button, Stack } from '@mui/material';
 import { useState } from 'react';
+import { EmptyState } from '../components/EmptyState';
+import { PageHeader } from '../components/PageHeader';
+import { PageLoader } from '../components/PageLoader';
 import { ProjectCard } from '../features/projects/components/ProjectCard';
 import { ProjectFormDialog } from '../features/projects/components/ProjectFormDialog';
+import { useAuth } from '../features/auth/hooks/useAuth';
 import { useProjectMutations } from '../features/projects/hooks/useProjectMutations';
 import { useProjectsList } from '../features/projects/hooks/useProjects';
 
 export function ProjectsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const [dialogOpen, setDialogOpen] = useState(false);
   const { data: projects, isLoading, isError, error } = useProjectsList();
   const { create } = useProjectMutations();
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-        <Box>
-          <Typography component="h1" variant="h4">
-            Projects
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Organize work into projects; each project has tasks with statuses on the board.
-          </Typography>
-        </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)}>
-          New project
-        </Button>
-      </Stack>
+    <Stack spacing={3}>
+      <PageHeader
+        eyebrow="Workspace"
+        title="Projects"
+        description={
+          isAdmin
+            ? 'Create projects and assign tasks to Saroj and Tejeshw.'
+            : 'Projects that include tasks assigned to you.'
+        }
+        actions={
+          isAdmin ? (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)}>
+              New project
+            </Button>
+          ) : undefined
+        }
+      />
 
-      {isLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-          <CircularProgress />
-        </Box>
-      )}
+      {isLoading && <PageLoader />}
 
       {isError && (
         <Alert severity="error">
@@ -46,11 +45,22 @@ export function ProjectsPage() {
         </Alert>
       )}
 
-      {!isLoading && !isError && (
+      {!isLoading && !isError && projects?.length === 0 && (
+        <EmptyState
+          icon={<FlagOutlinedIcon />}
+          title="No projects yet"
+          description={
+            isAdmin
+              ? 'Create a project, then assign tasks to Saroj or Tejeshw.'
+              : 'When admin assigns you a task, the project will show up here.'
+          }
+          actionLabel={isAdmin ? 'New project' : undefined}
+          onAction={isAdmin ? () => setDialogOpen(true) : undefined}
+        />
+      )}
+
+      {!isLoading && !isError && (projects?.length ?? 0) > 0 && (
         <Stack spacing={2}>
-          {projects?.length === 0 && (
-            <Alert severity="info">Create a project, then add tasks from the project page or board.</Alert>
-          )}
           {projects?.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
@@ -64,6 +74,6 @@ export function ProjectsPage() {
           await create.mutateAsync(input);
         }}
       />
-    </Box>
+    </Stack>
   );
 }

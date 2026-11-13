@@ -14,7 +14,11 @@
     "db:migrate": "dotenv -e ../.env -- prisma migrate dev",
     "db:migrate:deploy": "dotenv -e ../.env -- prisma migrate deploy",
     "db:studio": "dotenv -e ../.env -- prisma studio",
+    "db:seed": "dotenv -e ../.env -- prisma db seed",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

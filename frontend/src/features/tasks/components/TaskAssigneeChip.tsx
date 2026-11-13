@@ -15,7 +15,7 @@ export function TaskAssigneeChip({ assignee }: TaskAssigneeChipProps) {
         icon={<PersonOffOutlinedIcon sx={{ fontSize: '14px !important' }} />}
         label="Unassigned"
         sx={{
-          bgcolor: '#f8fafc',
+          bgcolor: 'action.hover',
           color: 'text.secondary',
           fontWeight: 600,
           height: 24,
@@ -47,7 +47,7 @@ export function TaskAssigneeChip({ assignee }: TaskAssigneeChipProps) {
       }
       label={assignee.name}
       sx={{
-        bgcolor: '#f8fafc',
+        bgcolor: 'action.hover',
         color: 'text.primary',
         fontWeight: 600,
         height: 24,
