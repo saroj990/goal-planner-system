@@ -1,22 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchAllTasks, fetchTasksForGoal } from '../api/tasksApi';
+import { fetchAllTasks, fetchTasksForProject } from '../api/tasksApi';
 
 export const tasksQueryKeys = {
-  all: ['tasks', 'all'] as const,
-  byGoal: (goalId: string) => ['tasks', 'goal', goalId] as const,
+  all: (filters?: { projectId?: string; assigneeId?: string }) =>
+    ['tasks', 'all', filters?.projectId ?? null, filters?.assigneeId ?? null] as const,
+  byProject: (projectId: string) => ['tasks', 'project', projectId] as const,
 };
 
-export function useAllTasks() {
+export function useAllTasks(filters?: { projectId?: string; assigneeId?: string }) {
   return useQuery({
-    queryKey: tasksQueryKeys.all,
-    queryFn: fetchAllTasks,
+    queryKey: tasksQueryKeys.all(filters),
+    queryFn: () => fetchAllTasks(filters),
   });
 }
 
-export function useTasksForGoal(goalId: string) {
+export function useTasksForProject(projectId: string) {
   return useQuery({
-    queryKey: tasksQueryKeys.byGoal(goalId),
-    queryFn: () => fetchTasksForGoal(goalId),
-    enabled: Boolean(goalId),
+    queryKey: tasksQueryKeys.byProject(projectId),
+    queryFn: () => fetchTasksForProject(projectId),
+    enabled: Boolean(projectId),
   });
 }

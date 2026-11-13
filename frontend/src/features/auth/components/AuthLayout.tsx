@@ -21,32 +21,48 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
         py: 4,
         background: (theme) =>
           theme.palette.mode === 'dark'
-            ? 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(96, 165, 250, 0.18), transparent 55%), #000'
-            : 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(37, 99, 235, 0.12), transparent 55%), #f8fafc',
+            ? 'radial-gradient(ellipse 80% 55% at 50% -15%, rgba(56, 189, 248, 0.16), transparent 55%), #09090b'
+            : 'radial-gradient(ellipse 80% 55% at 50% -15%, rgba(2, 132, 199, 0.12), transparent 55%), #f3f7fb',
       }}
     >
       <Stack spacing={3} sx={{ width: '100%', maxWidth: 420 }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography
+          <Box
             component={RouterLink}
             to="/login"
             sx={{
-              display: 'inline-block',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 1,
               textDecoration: 'none',
               color: 'text.primary',
-              fontWeight: 800,
-              fontSize: 22,
-              letterSpacing: '-0.03em',
-              mb: 1,
+              mb: 2,
             }}
           >
-            Goal Tracker
-          </Typography>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
+            <Box
+              sx={{
+                width: 34,
+                height: 34,
+                borderRadius: 1.5,
+                bgcolor: 'primary.main',
+                color: 'primary.contrastText',
+                display: 'grid',
+                placeItems: 'center',
+                fontWeight: 800,
+                fontSize: 13,
+              }}
+            >
+              GT
+            </Box>
+            <Typography sx={{ fontWeight: 800, fontSize: 20, letterSpacing: '-0.03em' }}>
+              Goal Tracker
+            </Typography>
+          </Box>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 0.5, letterSpacing: '-0.02em' }}>
             {title}
           </Typography>
           {subtitle ? (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.55 }}>
               {subtitle}
             </Typography>
           ) : null}
@@ -63,7 +79,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
                 : '0 20px 40px rgba(15, 23, 42, 0.08)',
           })}
         >
-          <CardContent sx={{ p: 3 }}>{children}</CardContent>
+          <CardContent sx={{ p: 3.25 }}>{children}</CardContent>
         </Card>
 
         {footer ? (

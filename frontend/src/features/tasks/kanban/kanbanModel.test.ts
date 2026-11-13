@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TaskStatus } from '../types';
+import { TaskPriority, TaskStatus } from '../types';
 import type { Task } from '../types';
 import {
   buildBoardReorderPayload,
@@ -13,11 +13,13 @@ import {
 
 const baseTask = (overrides: Partial<Task>): Task => ({
   id: '1',
-  goalId: 'g1',
+  projectId: 'p1',
   title: 'T',
   description: null,
   status: TaskStatus.TODO,
-  priority: null,
+  priority: TaskPriority.MEDIUM,
+  assigneeId: null,
+  assignee: null,
   position: 100,
   dueDate: null,
   createdAt: '',

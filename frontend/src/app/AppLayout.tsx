@@ -7,6 +7,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined';
 import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
 import {
+  Avatar,
   Box,
   Divider,
   IconButton,
@@ -21,12 +22,13 @@ import {
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/hooks/useAuth';
+import { initialsFromName } from '../features/users/userDisplay';
 import { useThemeMode } from './ThemeModeProvider';
 import { radius } from './theme';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: DashboardOutlinedIcon, end: true },
-  { to: '/goals', label: 'Goals', icon: FlagOutlinedIcon, end: false },
+  { to: '/projects', label: 'Projects', icon: FlagOutlinedIcon, end: false },
   { to: '/board', label: 'Board', icon: ViewKanbanOutlinedIcon, end: false },
   { to: '/progress', label: 'Progress', icon: ShowChartOutlinedIcon, end: false },
 ] as const;
@@ -40,41 +42,78 @@ export function AppLayout() {
   const displayName = user?.name?.split(' ')[0] ?? 'Account';
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        bgcolor: 'background.default',
+        backgroundImage: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'radial-gradient(ellipse 70% 40% at 0% 0%, rgba(56, 189, 248, 0.08), transparent 50%)'
+            : 'radial-gradient(ellipse 70% 40% at 0% 0%, rgba(2, 132, 199, 0.06), transparent 50%)',
+      }}
+    >
       <Box
         component="nav"
         aria-label="Main"
         sx={{
-          width: { xs: 72, sm: 240 },
+          width: { xs: 72, sm: 248 },
           flexShrink: 0,
           borderRight: 1,
           borderColor: 'divider',
-          bgcolor: 'background.paper',
+          bgcolor: (theme) =>
+            theme.palette.mode === 'dark' ? 'rgba(18, 18, 22, 0.92)' : 'rgba(255, 255, 255, 0.86)',
+          backdropFilter: 'blur(12px)',
           display: 'flex',
           flexDirection: 'column',
           py: 2.5,
           px: { xs: 1, sm: 2 },
         }}
       >
-        <Typography
+        <Box
           component={NavLink}
           to="/"
           end
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.25,
             px: { xs: 0.5, sm: 1 },
-            mb: 2,
+            mb: 2.5,
             textDecoration: 'none',
             color: 'text.primary',
-            fontWeight: 800,
-            fontSize: { xs: 11, sm: 18 },
-            letterSpacing: '-0.03em',
-            textAlign: { xs: 'center', sm: 'left' },
-            lineHeight: 1.2,
+            justifyContent: { xs: 'center', sm: 'flex-start' },
           }}
         >
-          <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Goal Tracker</Box>
-          <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>GT</Box>
-        </Typography>
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: 1.5,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'grid',
+              placeItems: 'center',
+              fontWeight: 800,
+              fontSize: 13,
+              letterSpacing: '-0.04em',
+              flexShrink: 0,
+            }}
+          >
+            GT
+          </Box>
+          <Typography
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              fontWeight: 800,
+              fontSize: 17,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.2,
+            }}
+          >
+            Goal Tracker
+          </Typography>
+        </Box>
 
         <Divider sx={{ mb: 2, display: { xs: 'none', sm: 'block' } }} />
 
@@ -91,13 +130,14 @@ export function AppLayout() {
                 alignItems: 'center',
                 gap: 1.5,
                 px: { xs: 1, sm: 1.5 },
-                py: 1.25,
+                py: 1.15,
                 borderRadius: `${radius.control}px`,
                 textDecoration: 'none',
                 color: 'text.secondary',
                 fontWeight: 600,
                 fontSize: 14,
                 justifyContent: { xs: 'center', sm: 'flex-start' },
+                transition: 'background-color 0.15s ease, color 0.15s ease',
                 '&.active': {
                   color: 'primary.main',
                   bgcolor: theme.palette.action.selected,
@@ -109,38 +149,51 @@ export function AppLayout() {
               })}
             >
               <Icon sx={{ fontSize: 22 }} />
-              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>{label}</Box>
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                {label}
+              </Box>
             </Box>
           ))}
         </Stack>
 
-        <Stack spacing={0.5} sx={{ mt: 1 }}>
-          <Tooltip title="Account">
-            <IconButton
-              onClick={(e) => setMenuAnchor(e.currentTarget)}
-              aria-label="Account menu"
-              sx={{
-                alignSelf: { xs: 'center', sm: 'flex-start' },
-                ml: { sm: 0.5 },
-                color: 'text.secondary',
-              }}
-            >
-              <AccountCircleOutlinedIcon />
-            </IconButton>
-          </Tooltip>
-          <Typography
-            variant="caption"
-            color="text.secondary"
+        <Stack spacing={1} sx={{ mt: 1, px: { sm: 0.5 } }}>
+          <Box
             sx={{
-              display: { xs: 'none', sm: 'block' },
-              px: 1.5,
-              fontWeight: 600,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              justifyContent: { xs: 'center', sm: 'flex-start' },
             }}
           >
-            {displayName}
-          </Typography>
+            <Tooltip title="Account">
+              <IconButton
+                onClick={(e) => setMenuAnchor(e.currentTarget)}
+                aria-label="Account menu"
+                sx={{ p: 0.5 }}
+              >
+                <Avatar
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    bgcolor: 'primary.main',
+                  }}
+                >
+                  {user?.name ? initialsFromName(user.name) : '?'}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+            <Box sx={{ display: { xs: 'none', sm: 'block' }, minWidth: 0 }}>
+              <Typography variant="body2" fontWeight={700} noWrap>
+                {displayName}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" noWrap>
+                {user?.role === 'ADMIN' ? 'Admin' : 'Member'}
+              </Typography>
+            </Box>
+          </Box>
+
           <Menu
             anchorEl={menuAnchor}
             open={Boolean(menuAnchor)}
@@ -179,8 +232,8 @@ export function AppLayout() {
               aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               sx={{
                 alignSelf: { xs: 'center', sm: 'flex-start' },
-                ml: { sm: 0.5 },
                 color: 'text.secondary',
+                borderRadius: `${radius.control}px`,
               }}
             >
               {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}

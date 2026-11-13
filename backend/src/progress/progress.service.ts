@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { GoalType } from '@prisma/client';
+import { isAdmin } from '../auth/access';
+import { RequestUser } from '../auth/auth.types';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface ProgressDayPoint {
   date: string;
-  goals: { daily: number; weekly: number; monthly: number };
+  projects: number;
   tasks: number;
 }
 
@@ -19,47 +20,40 @@ const MAX_DAYS = 90;
 export class ProgressService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getHistory(userId: string, days = DEFAULT_DAYS): Promise<ProgressResponse> {
+  async getHistory(actor: RequestUser, days = DEFAULT_DAYS): Promise<ProgressResponse> {
     const span = Math.min(Math.max(days, 1), MAX_DAYS);
     const { start, keys } = dayRange(span);
 
-    const goals = await this.prisma.goal.findMany({
+    const projects = await this.prisma.project.findMany({
       where: {
-        userId,
+        ...(isAdmin(actor) ? {} : { userId: actor.id }),
         completedAt: { gte: start },
       },
     });
 
-    const goalIds = await this.prisma.goal.findMany({
-      where: { userId },
-      select: { id: true },
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        completedAt: { gte: start },
+        ...(isAdmin(actor)
+          ? {}
+          : {
+              OR: [{ assigneeId: actor.id }, { project: { userId: actor.id } }],
+            }),
+      },
     });
-    const ids = goalIds.map((g) => g.id);
-    const tasks =
-      ids.length === 0
-        ? []
-        : await this.prisma.task.findMany({
-            where: {
-              goalId: { in: ids },
-              completedAt: { gte: start },
-            },
-          });
 
     const points = keys.map((date) => ({
       date,
-      goals: { daily: 0, weekly: 0, monthly: 0 },
+      projects: 0,
       tasks: 0,
     }));
     const byDate = new Map(points.map((p) => [p.date, p]));
 
-    for (const goal of goals) {
-      if (!goal.completedAt) continue;
-      const key = toDateKey(goal.completedAt);
+    for (const project of projects) {
+      if (!project.completedAt) continue;
+      const key = toDateKey(project.completedAt);
       const point = byDate.get(key);
-      if (!point) continue;
-      if (goal.type === GoalType.DAILY) point.goals.daily += 1;
-      else if (goal.type === GoalType.WEEKLY) point.goals.weekly += 1;
-      else point.goals.monthly += 1;
+      if (point) point.projects += 1;
     }
 
     for (const task of tasks) {

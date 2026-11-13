@@ -7,13 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum GoalType {
-  DAILY
-  WEEKLY
-  MONTHLY
-}
-
-enum GoalStatus {
+enum ProjectStatus {
   ACTIVE
   COMPLETED
   ARCHIVED
@@ -26,16 +20,30 @@ enum TaskStatus {
   DONE
 }
 
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+
 model User {
   id           String               @id @default(cuid())
   name         String
   email        String               @unique
   passwordHash String?              @map("password_hash")
+  role         UserRole             @default(MEMBER)
   createdAt    DateTime             @default(now()) @map("created_at")
   updatedAt    DateTime             @updatedAt @map("updated_at")
-  goals        Goal[]
-  resetTokens  PasswordResetToken[]
-  taskComments TaskComment[]
+  projects      Project[]
+  resetTokens   PasswordResetToken[]
+  taskComments  TaskComment[]
+  assignedTasks Task[]               @relation("TaskAssignee")
 
   @@map("users")
 }
@@ -52,42 +60,44 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
 }
 
-model Goal {
-  id          String     @id @default(cuid())
-  userId      String     @map("user_id")
+model Project {
+  id          String        @id @default(cuid())
+  userId      String        @map("user_id")
   title       String
   description String?
-  type        GoalType
-  startDate   DateTime?  @map("start_date") @db.Date
-  dueDate     DateTime?  @map("due_date") @db.Date
-  status      GoalStatus @default(ACTIVE)
+  startDate   DateTime?     @map("start_date") @db.Date
+  dueDate     DateTime?     @map("due_date") @db.Date
+  status      ProjectStatus @default(ACTIVE)
   priority    Int?
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  completedAt DateTime?  @map("completed_at")
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  completedAt DateTime?     @map("completed_at")
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks       Task[]
 
   @@index([userId])
-  @@map("goals")
+  @@map("projects")
 }
 
 model Task {
-  id          String     @id @default(cuid())
-  goalId      String     @map("goal_id")
+  id          String       @id @default(cuid())
+  projectId   String       @map("project_id")
+  assigneeId  String?      @map("assignee_id")
   title       String
   description String?
-  status      TaskStatus @default(TODO)
-  priority    Int?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
   position    Int
-  dueDate     DateTime?  @map("due_date") @db.Date
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  completedAt DateTime?  @map("completed_at")
-  goal        Goal          @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  dueDate     DateTime?    @map("due_date") @db.Date
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  completedAt DateTime?    @map("completed_at")
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    User?        @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   comments    TaskComment[]
 
-  @@index([goalId])
+  @@index([projectId])
+  @@index([assigneeId])
   @@map("tasks")
 }
 

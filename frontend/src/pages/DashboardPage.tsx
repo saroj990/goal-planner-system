@@ -1,16 +1,26 @@
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import {
   Alert,
   Box,
-  CircularProgress,
+  FormControl,
+  InputLabel,
   LinearProgress,
-  Paper,
+  MenuItem,
+  Select,
   Stack,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { radius } from '../app/theme';
+import { PageHeader } from '../components/PageHeader';
+import { PageLoader } from '../components/PageLoader';
+import { SectionCard } from '../components/SectionCard';
 import { useDashboard } from '../features/dashboard/hooks/useDashboard';
+import { useProjectsList } from '../features/projects/hooks/useProjects';
 
 function greeting(): string {
   const hour = new Date().getHours();
@@ -20,15 +30,12 @@ function greeting(): string {
 }
 
 export function DashboardPage() {
-  const { data, isLoading, isError, error } = useDashboard();
+  const [projectId, setProjectId] = useState('');
+  const filterId = projectId || undefined;
+  const { data: projects } = useProjectsList();
+  const { data, isLoading, isError, error } = useDashboard(filterId);
 
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  if (isLoading) return <PageLoader />;
 
   if (isError || !data) {
     return (
@@ -40,92 +47,160 @@ export function DashboardPage() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h4" component="h1">{greeting()}</Typography>
-        <Typography color="text.secondary" variant="body2" sx={{ mt: 0.5 }}>
-          Here’s your progress for today.
-        </Typography>
+      <PageHeader
+        eyebrow="Overview"
+        title={greeting()}
+        description={filterId ? 'Stats for the selected project.' : 'A calm snapshot across your projects and tasks.'}
+        actions={
+          <FormControl size="small" sx={{ minWidth: 220 }}>
+            <InputLabel id="dashboard-project-filter">Project</InputLabel>
+            <Select
+              labelId="dashboard-project-filter"
+              label="Project"
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+            >
+              <MenuItem value="">All projects</MenuItem>
+              {(projects ?? []).map((p) => (
+                <MenuItem key={p.id} value={p.id}>
+                  {p.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        }
+      />
+
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
+        }}
+      >
+        <MetricCard label="Projects done" value={`${data.projectsCompleted}/${data.projectsTotal}`} />
+        <MetricCard label="Tasks done" value={`${data.tasksCompleted}/${data.tasksTotal}`} />
+        <MetricCard label="Active projects" value={String(data.activeProjectsCount)} />
       </Box>
 
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-          Today&apos;s progress
+      <SectionCard title="Task completion" subtitle={`${data.completionPercent}% marked done in this view`}>
+        <LinearProgress variant="determinate" value={data.completionPercent} sx={{ mb: 1 }} />
+        <Typography variant="caption" color="text.secondary">
+          Keep moving work through the board to raise this number.
         </Typography>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ mb: 2 }}>
-          <Stat label="Goals" value={`${data.goalsCompleted} / ${data.goalsTotal}`} />
-          <Stat label="Tasks" value={`${data.tasksCompleted} / ${data.tasksTotal}`} />
-          <Stat label="Active goals" value={String(data.activeGoalsCount)} />
-        </Stack>
-        <LinearProgress
-          variant="determinate"
-          value={data.completionPercent}
-          sx={{ height: 8, borderRadius: '4px' }}
-        />
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-          {data.completionPercent}% complete (daily goals & tasks)
-        </Typography>
-      </Paper>
+      </SectionCard>
 
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>Today&apos;s goals</Typography>
-        {data.todaysGoals.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">No active daily goals.</Typography>
-        ) : (
-          <Stack spacing={1}>
-            {data.todaysGoals.map((goal) => (
-              <Stack
-                key={goal.id}
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                component={RouterLink}
-                to={`/goals/${goal.id}`}
-                sx={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <RadioButtonUncheckedIcon fontSize="small" color="action" />
-                <Typography variant="body2">{goal.title}</Typography>
-              </Stack>
-            ))}
-          </Stack>
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: { xs: '1fr', md: data.overdueProjects.length > 0 ? '1.2fr 0.8fr' : '1fr' },
+        }}
+      >
+        <SectionCard title="Active projects" subtitle="Jump into work that is still open">
+          {data.activeProjects.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No active projects in this view.
+            </Typography>
+          ) : (
+            <Stack spacing={1}>
+              {data.activeProjects.map((project) => (
+                <Box
+                  key={project.id}
+                  component={RouterLink}
+                  to={`/projects/${project.id}`}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.25,
+                    px: 1.5,
+                    py: 1.15,
+                    borderRadius: `${radius.control}px`,
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    bgcolor: 'action.hover',
+                    transition: 'background-color 0.15s ease, transform 0.15s ease',
+                    '&:hover': {
+                      bgcolor: 'action.selected',
+                      transform: 'translateX(2px)',
+                    },
+                  }}
+                >
+                  <RadioButtonUncheckedIcon fontSize="small" color="primary" />
+                  <Typography variant="body2" fontWeight={600} sx={{ flex: 1 }}>
+                    {project.title}
+                  </Typography>
+                  <ArrowForwardIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+                </Box>
+              ))}
+            </Stack>
+          )}
+        </SectionCard>
+
+        {data.overdueProjects.length > 0 && (
+          <SectionCard
+            title="Overdue"
+            subtitle="Needs attention"
+            tone="danger"
+            action={<WarningAmberOutlinedIcon color="error" fontSize="small" />}
+          >
+            <Stack spacing={1}>
+              {data.overdueProjects.map((project) => (
+                <Typography
+                  key={project.id}
+                  component={RouterLink}
+                  to={`/projects/${project.id}`}
+                  variant="body2"
+                  fontWeight={600}
+                  sx={{ textDecoration: 'none', color: 'error.main' }}
+                >
+                  {project.title}
+                </Typography>
+              ))}
+            </Stack>
+          </SectionCard>
         )}
-      </Paper>
+      </Box>
 
-      {data.overdueGoals.length > 0 && (
-        <Paper sx={{ p: 3, borderColor: 'error.light', border: 1 }}>
-          <Typography variant="h6" color="error" gutterBottom>Overdue</Typography>
-          <Stack spacing={1}>
-            {data.overdueGoals.map((goal) => (
-              <Typography
-                key={goal.id}
-                component={RouterLink}
-                to={`/goals/${goal.id}`}
-                variant="body2"
-                sx={{ textDecoration: 'none', color: 'error.main' }}
-              >
-                {goal.title}
-              </Typography>
-            ))}
-          </Stack>
-        </Paper>
-      )}
-
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>Today&apos;s tasks by status</Typography>
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+      <SectionCard title="Tasks by status" subtitle="A quick scan of where work sits right now">
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' },
+          }}
+        >
           <TaskColumn title="To do" tasks={data.tasksByStatus.todo} />
           <TaskColumn title="In progress" tasks={data.tasksByStatus.inProgress} />
+          <TaskColumn title="Blocked" tasks={data.tasksByStatus.blocked} />
           <TaskColumn title="Done" tasks={data.tasksByStatus.done} done />
-        </Stack>
-      </Paper>
+        </Box>
+      </SectionCard>
     </Stack>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <Box>
-      <Typography variant="caption" color="text.secondary">{label}</Typography>
-      <Typography variant="h6" fontWeight={700}>{value}</Typography>
+    <Box
+      sx={{
+        p: 2.5,
+        borderRadius: `${radius.card}px`,
+        border: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'background.paper',
+        backgroundImage: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'linear-gradient(160deg, rgba(56,189,248,0.08), transparent 55%)'
+            : 'linear-gradient(160deg, rgba(2,132,199,0.06), transparent 55%)',
+      }}
+    >
+      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+        {label}
+      </Typography>
+      <Typography variant="h5" fontWeight={700} sx={{ mt: 0.75, letterSpacing: '-0.03em' }}>
+        {value}
+      </Typography>
     </Box>
   );
 }
@@ -140,22 +215,43 @@ function TaskColumn({
   done?: boolean;
 }) {
   return (
-    <Box sx={{ flex: 1, minWidth: 160 }}>
-      <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>{title}</Typography>
-      <Stack spacing={0.5}>
+    <Box
+      sx={{
+        p: 1.75,
+        borderRadius: `${radius.card}px`,
+        bgcolor: 'action.hover',
+        minHeight: 140,
+      }}
+    >
+      <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.25 }}>
+        {title}
+        <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 0.75 }}>
+          {tasks.length}
+        </Typography>
+      </Typography>
+      <Stack spacing={0.75}>
         {tasks.length === 0 && (
-          <Typography variant="caption" color="text.secondary">—</Typography>
+          <Typography variant="caption" color="text.secondary">
+            Empty
+          </Typography>
         )}
-        {tasks.map((t) => (
-          <Stack key={t.id} direction="row" spacing={0.5} alignItems="center">
+        {tasks.slice(0, 5).map((t) => (
+          <Stack key={t.id} direction="row" spacing={0.75} alignItems="flex-start">
             {done ? (
-              <CheckCircleOutlineIcon sx={{ fontSize: 16, color: 'success.main' }} />
+              <CheckCircleOutlineIcon sx={{ fontSize: 16, color: 'success.main', mt: 0.15 }} />
             ) : (
-              <RadioButtonUncheckedIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+              <RadioButtonUncheckedIcon sx={{ fontSize: 16, color: 'text.disabled', mt: 0.15 }} />
             )}
-            <Typography variant="body2">{t.title}</Typography>
+            <Typography variant="body2" sx={{ lineHeight: 1.35 }}>
+              {t.title}
+            </Typography>
           </Stack>
         ))}
+        {tasks.length > 5 ? (
+          <Typography variant="caption" color="text.secondary">
+            +{tasks.length - 5} more
+          </Typography>
+        ) : null}
       </Stack>
     </Box>
   );

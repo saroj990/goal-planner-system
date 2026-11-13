@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { GoalType } from '@prisma/client';
 import request from 'supertest';
 import { authHeader, registerAndLogin } from '../../test/auth-test.helper';
 import { AppModule } from '../app.module';
@@ -13,7 +12,7 @@ describeIfDb('Dashboard API (integration)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let accessToken: string;
-  const goalIds: string[] = [];
+  const projectIds: string[] = [];
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
@@ -26,20 +25,20 @@ describeIfDb('Dashboard API (integration)', () => {
   });
 
   afterAll(async () => {
-    if (goalIds.length) await prisma.goal.deleteMany({ where: { id: { in: goalIds } } });
+    if (projectIds.length) await prisma.project.deleteMany({ where: { id: { in: projectIds } } });
     await app.close();
   });
 
   it('GET /dashboard returns summary shape', async () => {
-    const goal = await request(app.getHttpServer())
-      .post('/api/v1/goals')
+    const project = await request(app.getHttpServer())
+      .post('/api/v1/projects')
       .set(authHeader(accessToken))
-      .send({ title: 'Dash goal', type: GoalType.DAILY })
+      .send({ title: 'Dash project' })
       .expect(201);
-    goalIds.push(goal.body.id);
+    projectIds.push(project.body.id);
 
     await request(app.getHttpServer())
-      .post(`/api/v1/goals/${goal.body.id}/tasks`)
+      .post(`/api/v1/projects/${project.body.id}/tasks`)
       .set(authHeader(accessToken))
       .send({ title: 'Dash task' })
       .expect(201);
@@ -50,15 +49,32 @@ describeIfDb('Dashboard API (integration)', () => {
       .expect(200);
 
     expect(res.body).toMatchObject({
-      goalsTotal: expect.any(Number),
       tasksTotal: expect.any(Number),
       completionPercent: expect.any(Number),
-      activeGoalsCount: expect.any(Number),
+      activeProjectsCount: expect.any(Number),
       tasksByStatus: {
         todo: expect.any(Array),
         inProgress: expect.any(Array),
+        blocked: expect.any(Array),
         done: expect.any(Array),
       },
     });
+  });
+
+  it('GET /dashboard?projectId= scopes metrics', async () => {
+    const project = await request(app.getHttpServer())
+      .post('/api/v1/projects')
+      .set(authHeader(accessToken))
+      .send({ title: 'Scoped project' })
+      .expect(201);
+    projectIds.push(project.body.id);
+
+    const res = await request(app.getHttpServer())
+      .get(`/api/v1/dashboard?projectId=${project.body.id}`)
+      .set(authHeader(accessToken))
+      .expect(200);
+
+    expect(res.body.filterProjectId).toBe(project.body.id);
+    expect(res.body.projectsTotal).toBe(1);
   });
 });

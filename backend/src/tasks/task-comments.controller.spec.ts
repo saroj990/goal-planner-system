@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { GoalType } from '@prisma/client';
 import request from 'supertest';
 import { authHeader, registerAndLogin } from '../../test/auth-test.helper';
 import { AppModule } from '../app.module';
@@ -14,6 +13,7 @@ describeIfDb('Task comments API (integration)', () => {
   let prisma: PrismaService;
   let accessToken: string;
   let userId: string;
+  let projectId: string;
   let taskId: string;
   const commentIds: string[] = [];
 
@@ -28,14 +28,15 @@ describeIfDb('Task comments API (integration)', () => {
     accessToken = auth.accessToken;
     userId = auth.userId;
 
-    const goal = await request(app.getHttpServer())
-      .post('/api/v1/goals')
+    const project = await request(app.getHttpServer())
+      .post('/api/v1/projects')
       .set(authHeader(accessToken))
-      .send({ title: 'Comment goal', type: GoalType.DAILY })
+      .send({ title: 'Comment project' })
       .expect(201);
+    projectId = project.body.id;
 
     const task = await request(app.getHttpServer())
-      .post(`/api/v1/goals/${goal.body.id}/tasks`)
+      .post(`/api/v1/projects/${projectId}/tasks`)
       .set(authHeader(accessToken))
       .send({ title: 'Comment task' })
       .expect(201);
@@ -47,6 +48,9 @@ describeIfDb('Task comments API (integration)', () => {
       await prisma.taskComment.deleteMany({ where: { id: { in: commentIds } } });
     }
     await prisma.task.deleteMany({ where: { id: taskId } }).catch(() => undefined);
+    if (projectId) {
+      await prisma.project.delete({ where: { id: projectId } }).catch(() => undefined);
+    }
     await app.close();
   });
 

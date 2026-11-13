@@ -25,7 +25,7 @@ export class ReorderTaskItemDto {
 export class ReorderTasksDto {
   @IsString()
   @IsNotEmpty()
-  goalId!: string;
+  projectId!: string;
 
   @IsArray()
   @ArrayMinSize(1)

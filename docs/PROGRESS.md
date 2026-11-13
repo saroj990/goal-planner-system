@@ -1,11 +1,11 @@
 # Goal Tracker — implementation progress
 
-**Last updated:** 2026-10-02  
+**Last updated:** 2026-11-13  
 **Current iteration:** 7 — Production hardening (in progress)  
 **Status:** in progress  
-**Current focus:** Docker production path; task comments (markdown) on goal detail tasks.
+**Current focus:** Admin + seeded members (Saroj, Tejeshw) with assignable tasks.
 
-**UI refresh (2026-09-30):** Sidebar navigation, calmer theme, Kanban cross-column drag (todo → in progress → done).
+**UI refresh (2026-11-13):** Shared `PageHeader` / `EmptyState` / `SectionCard`, sky primary, softer surfaces, metric dashboard, status chips, auth/brand mark.
 
 Canonical spec (local, gitignored): `local/architecture/goal-tracker-architecture-plan.md`
 
@@ -70,6 +70,11 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 
 ## Recently completed
 
+- **Task status picker:** Replaces legacy `Select` with chip trigger + menu; tighter theme radii (8/6/10).
+- **Admin + seed users:** `UserRole` (`ADMIN`/`MEMBER`); seed Admin / Saroj / Tejeshw; admin manages projects & assigns tasks; members see assigned work; board assignee filter for admin.
+- **UI polish (all pages):** Theme radii/primary, sidebar brand + avatar, `PageHeader`/`EmptyState`/`SectionCard`/`PageLoader`; Dashboard metrics; Projects/Board/Progress/Profile/Auth surfaces; project status chips; chart theme sync.
+- **Task assignee & priority:** `TaskPriority` enum (`LOW`–`URGENT`), optional `assigneeId` + `GET /users/assignable`; priority chips, assignee avatars, polished task dialog (picker + autocomplete).
+- **Project-centric model:** Goals renamed/migrated to `projects` (no daily/weekly/monthly type); tasks use `projectId`; `/api/v1/projects`; dashboard `?projectId=` filter; UI `/projects`, redirects from `/goals`.
 - **Task comments:** `TaskComment` model; `GET/POST/DELETE /tasks/:taskId/comments`; markdown UI on goal detail task list (`react-markdown`).
 - **JWT auth (end-to-end):** `AuthModule`, global `JwtAuthGuard`, `@Public()` health + auth routes; goals/tasks/dashboard/progress scoped by JWT user; Prisma `password_hash` + `PasswordResetToken`; frontend login/register/forgot/reset/profile, `AuthProvider`, protected routes, Bearer on `apiClient`.
 - **Step 13 — Progress UI:** ECharts completion chart, `/progress` route.
@@ -94,10 +99,13 @@ Canonical spec (local, gitignored): `local/architecture/goal-tracker-architectur
 | 2026-09-30 | `before-implementing.mdc` — follow all rules and user step approval before coding. |
 | 2026-09-30 | Prisma `cuid` IDs; goal/task enums per architecture plan; `onDelete: Cascade` goal→tasks. |
 | 2026-09-30 | API errors: `statusCode`, `error`, `message`, `path`, `timestamp` via global exception filter. |
+| 2026-11-12 | **Projects replace goals** for V1 UX: each project has many tasks; dashboard filtered by project (user-requested pivot from goal types). |
 | 2026-10-02 | Replaced dev-user scoping with JWT; register/login required for app APIs; forgot-password logs reset URL (no email in V1). |
 | 2026-09-30 | Frontend API base via `VITE_API_URL` (see `.env.example`). |
 | 2026-09-30 | New tasks get `position` in steps of 100 per goal. |
-| 2026-09-30 | Modern UI skill + shared `app/theme.ts` (Inter, indigo, soft surfaces). |
+| 2026-09-30 | Modern UI skill + shared `app/theme.ts` (Inter, soft surfaces). |
+| 2026-11-13 | Product UI: sky primary (`#0284c7`), shared page primitives, muted status pills. |
+| 2026-11-13 | Admin role owns projects; members Saroj/Tejeshw receive assignments; open register still creates MEMBER. |
 | 2026-09-30 | Kanban reorder sends full task list with status + position per drag. |
 | 2026-09-30 | Progress API returns per-day buckets for goal types + task completions (`?days=`). |
 | 2026-09-30 | **Single workspace Kanban** at `/board` (`GET /tasks`, `POST /tasks/reorder-board`); goal detail uses task list only. |
