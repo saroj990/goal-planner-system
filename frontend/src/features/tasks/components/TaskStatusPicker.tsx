@@ -43,32 +43,29 @@ export function TaskStatusPicker({
           display: 'inline-flex',
           alignItems: 'center',
           gap: 0.25,
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: `${radius.control}px`,
-          bgcolor: 'background.paper',
-          px: 0.75,
-          py: 0.5,
+          border: 'none',
+          bgcolor: 'transparent',
+          p: 0,
+          m: 0,
           cursor: disabled ? 'default' : 'pointer',
-          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+          transition: 'opacity 0.15s ease',
           '&:hover': disabled
             ? {}
             : {
-                borderColor: 'primary.light',
-                boxShadow: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? '0 4px 12px rgba(0,0,0,0.25)'
-                    : '0 4px 12px rgba(15, 23, 42, 0.06)',
+                opacity: 0.92,
+                '& .status-chevron': { color: 'text.primary' },
               },
           '&:focus-visible': {
             outline: '2px solid',
             outlineColor: 'primary.main',
             outlineOffset: 2,
+            borderRadius: `${radius.control}px`,
           },
         }}
       >
         <TaskStatusChip status={value} />
         <KeyboardArrowDownRoundedIcon
+          className="status-chevron"
           sx={{
             fontSize: 18,
             color: 'text.secondary',
